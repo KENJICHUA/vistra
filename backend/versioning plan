@@ -1,0 +1,24 @@
+from fastapi import FastAPI, APIRouter
+
+app = FastAPI(
+    title="VISTRA API",
+    version="2.0.0",
+)
+
+v1 = APIRouter(prefix="/api/v1")
+
+@v1.get("/users")
+async def get_users():
+    ...
+
+app.include_router(v1)
+
+Breaking Change X.0.0
+Removing an endpoint, renaming fields, making optional fields required.Increment MAJOR, reset MINOR and PATCH to 0.
+
+New Feature 0.X.0
+Adding a new endpoint, introducing an optional query parameter.Increment MINOR, reset PATCH to 0.
+
+Bug Fix 0.0.X
+Repairing internal calculation errors, patching security leaks.Increment PATCH only.
+
