@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
     setError("");
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_LOCAL_API_URL}staff/auth/login`, {
+      const response = await fetch(`${import.meta.env.VITE_PROD_API_URL}staff/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
