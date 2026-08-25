@@ -1,62 +1,39 @@
-import React from "react";
-import { Plus, Trash2, Save, ArrowLeft, User, ClipboardList, Info } from "lucide-react";
+import React, { useState } from "react";
+import { Save, ArrowLeft, User, ClipboardList, Info } from "lucide-react";
+import { students, emptyDetails, civilstatus, type as visitTypeOptions } from "./medicalData";
+import { ReadOnlyField } from "../../../utils/ReadOnlyField";
+import { StudentCombobox } from "../../../utils/StudentComboBox";
+import { FieldLabel } from "../../../utils/FieldLabel";
+import { EditableRowsTable } from "../../../utils/EditableRowsTable";
+import { useEditableRows } from "../../../utils/useEditableRows";
 
-const sexChoice = ["Male", "Female"];
-const civilstatus = ["Single", "Married", "Widowed", "Separated", "Divorced"];
+const visitLogColumns = [
+  { key: "date", header: "Date", type: "date", width: "w-40" },
+  { key: "complaint", header: "Complaint / Findings", type: "textarea", placeholder: "e.g. Fever, headache since morning" },
+  { key: "treatment", header: "Treatment", type: "textarea", placeholder: "e.g. Paracetamol 500mg, rest advised" },
+];
 
-function FieldLabel({ htmlFor, children }) {
-  return (
-    <label htmlFor={htmlFor} className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-textSecondary">
-      {children}
-    </label>
-  );
-}
+const emptyVisitRow = () => ({ date: "", complaint: "", treatment: "" });
 
-function TextField({ id, label, type = "text", placeholder }) {
-  return (
-    <div>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <input id={id} type={type} placeholder={placeholder} className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-textPrimary placeholder:text-textMuted transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20" />
-    </div>
-  );
-}
+export default function PatientRecordForm({ onBack, onSave }) {
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [visitType, setVisitType] = useState("");
+  const { rows: visitRows, addRow, removeRow, updateRow, resetRows } = useEditableRows(emptyVisitRow, 1);
 
-function SelectField({ id, label, options, placeholder = "Select" }) {
-  return (
-    <div>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <select id={id} defaultValue="" className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-textPrimary transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20">
-        <option value="" disabled>{placeholder}</option>
-        {options.map((option) => (
-          <option key={option} value={option}>{option}</option>
-        ))}
-      </select>
-    </div>
-  );
-}
+  const details = selectedStudent
+    ? {
+        course: selectedStudent.course,
+        address: selectedStudent.address,
+        barangay: selectedStudent.barangay,
+        age: selectedStudent.age,
+        mobileNumber: selectedStudent.mobileNumber,
+        sex: selectedStudent.sex,
+        birthday: selectedStudent.birthday,
+        civilStatus: selectedStudent.civilStatus,
+        yearSection: selectedStudent.yearSection,
+      }
+    : emptyDetails;
 
-function VisitRow({ index }) {
-  return (
-    <tr className={`border-b border-border last:border-b-0 ${index % 2 === 1 ? "bg-background/40" : ""}`}>
-      <td className="p-2 align-top">
-        <input type="date" className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-textPrimary transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20" />
-      </td>
-      <td className="p-2 align-top">
-        <textarea placeholder="e.g. Fever, headache since morning" rows={2} className="w-full resize-none rounded-lg border border-border bg-surface px-3 py-2 text-sm text-textPrimary placeholder:text-textMuted transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20" />
-      </td>
-      <td className="p-2 align-top">
-        <textarea placeholder="e.g. Paracetamol 500mg, rest advised" rows={2} className="w-full resize-none rounded-lg border border-border bg-surface px-3 py-2 text-sm text-textPrimary placeholder:text-textMuted transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20" />
-      </td>
-      <td className="p-2 align-top text-center">
-        <button type="button" disabled aria-label="Remove visit row" className="rounded-lg p-2 text-textMuted opacity-40 transition-colors duration-200 disabled:cursor-not-allowed">
-          <Trash2 className="h-4 w-4" strokeWidth={2} />
-        </button>
-      </td>
-    </tr>
-  );
-}
-
-export default function PatientRecordForm({ onBack }) {
   const handleBack = () => {
     if (onBack) {
       onBack();
@@ -65,14 +42,49 @@ export default function PatientRecordForm({ onBack }) {
     }
   };
 
+  const handleClear = () => {
+    setSelectedStudent(null);
+    setVisitType("");
+    resetRows();
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!selectedStudent) return;
+
+    const record = {
+      student: selectedStudent,
+      details,
+      type: visitType,
+      visits: visitRows
+        .filter((row) => row.date || row.complaint || row.treatment)
+        .map(({ id, ...rest }) => rest),
+    };
+
+    if (onSave) {
+      onSave(record);
+    } else {
+      console.log("Saved record:", record);
+    }
+  };
+
   return (
-    <form className="mx-auto w-full max-w-4xl rounded-2xl border border-border bg-surface p-8 shadow-lg">
-      <div className="mb-8 flex items-center gap-3 border-b border-border pb-6">
+    <form onSubmit={handleSubmit} className="mx-auto w-full max-w-4xl rounded-2xl border border-border bg-surface p-8 shadow-lg">
+      <div className="mb-5 flex items-center gap-3 border-b border-border pb-6">
         <div>
           <h1 className="font-heading text-xl font-semibold text-primaryDark">Patient Medical Record</h1>
           <p className="mt-0.5 text-xs text-textMuted">To be completed by the attending doctor or nurse.</p>
         </div>
       </div>
+
+      {!selectedStudent && (
+        <div className="mb-6 flex items-start gap-1.5 rounded-xl border border-info/30 bg-info/5 px-3.5 py-2.5 text-xs text-info">
+          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+          <span>
+            Search and select an existing student to auto-fill their personal information. If the student is not found, please add them first.
+          </span>
+        </div>
+      )}
 
       <div className="mb-4 flex items-center gap-2">
         <User className="h-4 w-4 text-primary" strokeWidth={2} />
@@ -80,54 +92,53 @@ export default function PatientRecordForm({ onBack }) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <TextField id="name" label="Name" placeholder="Last name, First name, Middle name" />
+        <StudentCombobox studentList={students} selectedStudent={selectedStudent} onSelect={setSelectedStudent} />
+
+        <ReadOnlyField id="course" label="Course" value={details.course} placeholder="Select a student first" />
+        <ReadOnlyField id="address" label="Address" value={details.address} placeholder="Select a student first" />
+        <ReadOnlyField id="barangay" label="Barangay" value={details.barangay} placeholder="Select a student first" />
+        <ReadOnlyField id="age" label="Age" value={details.age} placeholder="Select a student first" />
+        <ReadOnlyField id="mobileNumber" label="Mobile Number" value={details.mobileNumber} placeholder="Select a student first" />
+        <ReadOnlyField id="sex" label="Sex" value={details.sex} placeholder="Select a student first" />
+        <ReadOnlyField id="birthday" label="Birthday" value={details.birthday} placeholder="Select a student first" />
+        <ReadOnlyField id="civilStatus" label="Civil Status" value={details.civilStatus} placeholder="Select a student first" />
+        <ReadOnlyField id="yearSection" label="Year and Section" value={details.yearSection} placeholder="Select a student first" />
+
+        <div>
+          <FieldLabel htmlFor="type">Type</FieldLabel>
+          <select
+            id="type"
+            value={visitType}
+            onChange={(e) => setVisitType(e.target.value)}
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-textPrimary transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="" disabled>
+              Select Type
+            </option>
+            {visitTypeOptions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
-
-        <TextField id="address" label="Address" placeholder="House no., Street" />
-
-        <TextField id="barangay" label="Barangay" placeholder="e.g. Barangay 1, Barangay 2" />
-
-        <TextField id="age" label="Age" type="number" />
-
-        <TextField id="mobileNumber" label="Mobile Number" type="tel" placeholder="09XX XXX XXXX" />
-
-        <SelectField id="sex" label="Sex" options={sexChoice} />
-
-        <TextField id="birthday" label="Birthday" type="date" />
-
-        <SelectField id="civilStatus" label="Civil Status" options={civilstatus} />
-
-        <TextField id="yearSection" label="Year and Section" placeholder="e.g. BSCS 4B or 4th Year, Section B" />
       </div>
 
       <div className="mt-10">
-        <div className="flex items-center justify-between border-t border-border pt-6">
-          <div className="flex items-center gap-2">
-            <ClipboardList className="h-4 w-4 text-primaryDark" strokeWidth={2} />
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-primary">Visit Log</h2>
-          </div>
-          <button type="button" disabled className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3.5 py-2 text-xs font-semibold text-textSecondary opacity-40 transition-colors duration-200 disabled:cursor-not-allowed">
-            <Plus className="h-3.5 w-3.5" strokeWidth={2} />
-            Add Row
-          </button>
+        <div className="mb-0 flex items-center gap-2 border-t border-border pt-6">
+          <ClipboardList className="h-4 w-4 text-primaryDark" strokeWidth={2} />
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-primary">Visit Log</h2>
         </div>
 
-        <div className="mt-4 overflow-x-auto rounded-xl border border-border">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b border-border bg-background text-left">
-                <th className="w-40 p-3 text-xs font-semibold uppercase tracking-wide text-textSecondary">Date</th>
-                <th className="p-3 text-xs font-semibold uppercase tracking-wide text-textSecondary">Complaint / Findings</th>
-                <th className="p-3 text-xs font-semibold uppercase tracking-wide text-textSecondary">Treatment</th>
-                <th className="w-12 p-3" />
-              </tr>
-            </thead>
-            <tbody>
-              <VisitRow index={0} />
-            </tbody>
-          </table>
-        </div>
+        <EditableRowsTable
+          columns={visitLogColumns}
+          rows={visitRows}
+          onChangeField={updateRow}
+          onAddRow={addRow}
+          onRemoveRow={removeRow}
+          disableAdd={!selectedStudent}
+          disableRemove={visitRows.length === 1}
+        />
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6">
@@ -137,11 +148,15 @@ export default function PatientRecordForm({ onBack }) {
         </button>
 
         <div className="flex items-center gap-3">
-          <button type="button" disabled className="rounded-xl px-4 py-2.5 text-sm font-medium text-textSecondary opacity-40 transition-colors duration-200 disabled:cursor-not-allowed">
+          <button type="button" onClick={handleClear} className="rounded-xl px-4 py-2.5 text-sm font-medium text-textSecondary transition-colors duration-200 hover:bg-background hover:text-textPrimary">
             Clear
           </button>
 
-          <button type="submit" disabled className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white opacity-40 shadow-sm transition-all duration-200 disabled:cursor-not-allowed">
+          <button
+            type="submit"
+            disabled={!selectedStudent}
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primaryDark disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary"
+          >
             <Save className="h-4 w-4" strokeWidth={2} />
             Save Record
           </button>

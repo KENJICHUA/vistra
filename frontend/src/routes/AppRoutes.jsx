@@ -1,18 +1,27 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import { ROUTES } from "../config/RoutePaths";
+
 import PublicLayout from "../layouts/PublicLayout";
-import AdminLayout from "../layouts/AdminLayout";
+import AdminLayout from "../layouts/AdminLayout.tsx";
 
 import LandingPage from "../pages/public/landingpage";
-import AdminHome from "../pages/admin/home";
-import AdminLoginPage from "../pages/admin/login";
+import StaffLandingPage from "../pages/admin/home";
+import StaffLoginPage from "../pages/admin/login";
 
 import OverviewTab from "../pages/admin/overview/overview";
+
 import MedicalTab from "../pages/admin/medical/medicalTab";
-import DentalTab from "../pages/admin/dental/dentalTab";
-import AppointmentsTab from "../pages/admin/appointments/appointmentsTab";
 import PatientRecordForm from "../pages/admin/medical/medicalRecForm";
 import PatientRecordView from "../pages/admin/medical/medicalViewRec";
+
+import DentalTab from "../pages/admin/dental/dentalTab";
+import DentalRecordForm from "../pages/admin/dental/dentalForm";
+import DentalRecordView from "../pages/admin/dental/dentalViewRec";
+
+import AppointmentsTab from "../pages/admin/appointments/appointmentsTab";
+
+
 import ProtectedRoute from "../components/ProtectedRoute.jsx"
 
 function AppRoutes() {
@@ -25,19 +34,23 @@ function AppRoutes() {
         </Route>
 
         {/* Admin Showcase / Login */}
-        <Route path="/admin" element={<AdminHome />} />
-        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path={ROUTES.admin.home} element={<StaffLandingPage />} />
+        <Route path={ROUTES.admin.login} element={<StaffLoginPage />} />
 
         {/* Admin */}
 
         <Route element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
-            <Route path="/admin/dashboard/overview" element={<OverviewTab />} />
-            <Route path="/admin/dashboard/medical" element={<MedicalTab />} />
-            <Route path="/admin/medical/medical-record-form" element={<PatientRecordForm />} />
-            <Route path="/admin/medical/records/viewrecord" element={<PatientRecordView />} />
-            <Route path="/admin/dashboard/dental" element={<DentalTab />} />
-            <Route path="/admin/dashboard/appointments" element={<AppointmentsTab />} />
+            <Route path={ROUTES.admin.dashboard.overview} element={<OverviewTab />} />
+            <Route path={ROUTES.admin.dashboard.medical} element={<MedicalTab />} />
+            <Route path={ROUTES.admin.medical.createNewRecord} element={<PatientRecordForm />} />
+            <Route path={ROUTES.admin.medical.viewRecord} element={<PatientRecordView />} />
+
+            <Route path={ROUTES.admin.dashboard.dental} element={<DentalTab />} />
+            <Route path={ROUTES.admin.dental.createNewRecord} element={<DentalRecordForm />} />
+            <Route path={ROUTES.admin.dental.viewRecord} element={<DentalRecordView />} />
+
+            <Route path={ROUTES.admin.dashboard.appointments} element={<AppointmentsTab />} />
           </Route>
         </Route>
       </Routes>

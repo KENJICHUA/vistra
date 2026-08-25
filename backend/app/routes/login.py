@@ -8,6 +8,6 @@ staff_auth_router = APIRouter(
     prefix="/staff/auth",
     tags=["Staff"]
 )
-@staff_auth_router.post("/login")
+@staff_auth_router.post("/login/")
 def login(request: LoginRequest):
     return staff_login(request)

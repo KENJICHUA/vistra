@@ -7,7 +7,7 @@ from app.routes import health, login, staff
 
 app = FastAPI(
     title="VISTRA API",
-    version="2.0.1"
+    version="2.1.0"
 )
 app.add_middleware(
     CORSMiddleware,
@@ -20,3 +20,4 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(login.staff_auth_router)
 app.include_router(staff.create_staff_router)
+app.include_router(staff.get_staff_by_id_router)

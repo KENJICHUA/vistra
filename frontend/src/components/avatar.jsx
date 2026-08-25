@@ -1,9 +1,23 @@
+import {ClipboardList, HeartPulse, Pill, Scissors, Smile, Sparkles, Stethoscope, Syringe, Wrench} from "lucide-react";
+const TYPE_ICONS = [
+  { match: /vaccin|shot|immun/i, icon: Syringe },
+  { match: /injur|accident|fall/i, icon: HeartPulse },
+  { match: /medic|prescri|dose/i, icon: Pill },
+  { match: /check|exam|screen/i, icon: Stethoscope },
+  { match: /extract/i, icon: Scissors },
+  { match: /prophylaxis|clean/i, icon: Sparkles },
+  { match: /filling|repair/i, icon: Wrench },
+  { match: /consult|check|exam/i, icon: Smile },
+
+];
+
 const AVATAR_PALETTE = [
   "bg-primary/10 text-primary",
   "bg-emerald-500/10 text-emerald-600",
   "bg-amber-500/10 text-amber-600",
   "bg-violet-500/10 text-violet-600",
   "bg-rose-500/10 text-rose-600",
+
 ];
 
 export function getInitials(name = "") {

@@ -5,22 +5,3 @@ export const APPOINTMENTS = [
   { id: "APT-1045", student: "Joshua Lapitan", course: "BS Nursing", time: "10:15 AM", type: "Fit to Work Certificate", status: "pending" },
 ];
 
-export const statusStyles = {
-  confirmed: "border-primary/30 bg-primary/10 text-primary",
-  pending: "border-warning/30 bg-warning/10 text-warning",
-  declined: "border-danger/30 bg-danger/10 text-danger",
-};
-
-export const statusLabels = {
-  confirmed: "Confirmed",
-  pending: "Pending",
-  declined: "Declined",
-};
-
-export function filterByQuery(items, query, fields) {
-  const normalized = query.trim().toLowerCase();
-  if (!normalized) return items;
-  return items.filter((item) =>
-    fields.some((field) => String(item[field]).toLowerCase().includes(normalized))
-  );
-}

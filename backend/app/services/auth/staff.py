@@ -1,5 +1,5 @@
-from app.database.DataBaseClient import  supabase
-from app.utils.email_utils import add_ucc_domain
+from app.database.database_client import  supabase
+from app.utils.email_utils import add_ucc_domain, staff_id_format
 
 def staff_login(request):
     try:
@@ -15,6 +15,7 @@ def staff_login(request):
             "success": True,
             "user": {
                 "id": user.id,
+                "staff_id": staff_id_format(user.email),
                 "email": user.email
             },
             "access_token": session.access_token

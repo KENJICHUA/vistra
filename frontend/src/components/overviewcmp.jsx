@@ -1,14 +1,11 @@
-import { medRecords, statusLabels as medicalStatusLabels } from "../pages/admin/medical/medicalData";
-import { denRecords, statusLabels as dentalStatusLabels } from "../pages/admin/dental/dentalData";
-
-
-export const combinedStatusLabels = { ...medicalStatusLabels, ...dentalStatusLabels };
+import { medRecords } from "../pages/admin/medical/medicalData";
+import { dentalRecords } from "../pages/admin/dental/dentalData";
 
 export const recordLimit = 8;
 
 export function buildClinicalRecords() {
   const medical = medRecords.map((record) => ({ ...record, department: "Medical" }));
-  const dental = denRecords.map((record) => ({ ...record, department: "Dental" }));
+  const dental = dentalRecords.map((record) => ({ ...record, department: "Dental" }));
   return [...medical, ...dental];
 }
 

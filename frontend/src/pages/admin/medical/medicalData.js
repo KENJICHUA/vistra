@@ -6,26 +6,89 @@ export const medRecords = [
   { id: "MED-1046", student: "Rosh Ingel", course: "BS Accountancy", time: "10:45 AM", type: "Medical Consultation", status: "ongoingTreatment" },
 ];
 
-export const statusStyles = {
-  cleared: "border-success/30 bg-success/10 text-success",
-  secondOpinion: "border-warning/30 bg-warning/10 text-warning",
-  recovered: "border-primary/30 bg-primary/10 text-primary",
-  referred: "border-info/30 bg-info/10 text-info",
-  ongoingTreatment: "border-treatment/30 bg-treatment/10 text-treatment",
+export const students = [
+  {
+    id: "MED-1042",
+    name: "Kenji Chua",
+    course: "BS Computer Science",
+    yearSection: "4th Year, Section A",
+    address: "12 Mahogany St.",
+    barangay: "Barangay Holy Spirit",
+    age: 21,
+    mobileNumber: "0917 234 5566",
+    sex: "Male",
+    birthday: "2005-03-14",
+    civilStatus: "Single",
+  },
+  {
+    id: "MED-1043",
+    name: "Ivan Mejorada",
+    course: "BS Nursing",
+    yearSection: "3rd Year, Section B",
+    address: "45 Narra Ave.",
+    barangay: "Barangay Batasan Hills",
+    age: 20,
+    mobileNumber: "0928 112 3344",
+    sex: "Male",
+    birthday: "2006-07-02",
+    civilStatus: "Single",
+  },
+  {
+    id: "MED-1044",
+    name: "Cjay Gonzales",
+    course: "BS Architecture",
+    yearSection: "5th Year, Section A",
+    address: "8 Acacia Lane",
+    barangay: "Barangay Commonwealth",
+    age: 22,
+    mobileNumber: "0939 887 6655",
+    sex: "Male",
+    birthday: "2004-01-29",
+    civilStatus: "Single",
+  },
+  {
+    id: "MED-1045",
+    name: "Joshua Lapitan",
+    course: "BS Civil Engineering",
+    yearSection: "4th Year, Section C",
+    address: "27 Kalachuchi St.",
+    barangay: "Barangay Payatas",
+    age: 21,
+    mobileNumber: "0906 554 4321",
+    sex: "Male",
+    birthday: "2005-11-08",
+    civilStatus: "Single",
+  },
+  {
+    id: "MED-1046",
+    name: "Rosh Ingel",
+    course: "BS Accountancy",
+    yearSection: "2nd Year, Section B",
+    address: "3 Ilang-Ilang St.",
+    barangay: "Barangay Fairview",
+    age: 19,
+    mobileNumber: "0915 774 8899",
+    sex: "Female",
+    birthday: "2007-05-19",
+    civilStatus: "Single",
+  },
+];
+
+export const civilstatus = ["Single", "Married", "Widowed", "Separated", "Divorced"];
+
+export const type = ["Medical Consultation", "Follow up"];
+
+export const emptyDetails = {
+  course: "",
+  address: "",
+  barangay: "",
+  age: "",
+  mobileNumber: "",
+  sex: "",
+  birthday: "",
+  civilStatus: "",
+  yearSection: "",
+  type: "",
 };
 
-export const statusLabels = {
-  cleared: "Cleared",
-  secondOpinion: "Second Opinion",
-  recovered: "Recovered",
-  referred: "Referred",
-  ongoingTreatment: "Ongoing Treatment",
-};
 
-export function filterByQuery(items, query, fields) {
-  const normalized = (query ?? "").trim().toLowerCase();
-  if (!normalized) return items;
-  return items.filter((item) =>
-    fields.some((field) => String(item[field]).toLowerCase().includes(normalized))
-  );
-}

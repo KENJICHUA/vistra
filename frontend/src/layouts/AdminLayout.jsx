@@ -4,13 +4,17 @@ import { Search, Bell } from "lucide-react";
 
 import Sidebar from "../pages/admin/sidebar";
 
-const hiddenheader = ["/admin/medical/medical-record-form"];
-const hiddenheaderview = ["/admin/medical/records/viewrecord"];
+const NO_HEADER_ROUTES = [
+  "/admin/medical/new",
+  "/admin/medical/records/view",
+  "/admin/dental/new",
+  "/admin/dental/records/view",
+];
 
 export default function AdminLayout() {
   const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
-  const hideHeader = hiddenheader .includes(location.pathname) || hiddenheaderview.includes(location.pathname);
+  const hideHeader = NO_HEADER_ROUTES.includes(location.pathname);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background font-sans text-textPrimary selection:bg-primary/20">

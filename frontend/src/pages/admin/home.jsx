@@ -40,7 +40,7 @@ export default function AdminLandingPage() {
         </div>
 
         
-          < a href="admin/login"
+          < a href="/login"
           className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3.5 py-1.5 text-xs font-semibold text-white shadow-card transition-all duration-300 hover:scale-[1.02] hover:bg-primaryDark hover:shadow-lg"
         >
           Log in
@@ -72,7 +72,7 @@ export default function AdminLandingPage() {
 
             <div className="mt-9 flex flex-wrap items-center gap-4">
               
-                <a href="admin/login"
+                <a href="/login"
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-base font-semibold text-white shadow-card transition-all duration-300 hover:scale-[1.02] hover:bg-primaryDark hover:shadow-lg"
               >
                 Log in to staff portal
