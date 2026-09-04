@@ -9,7 +9,7 @@ import {
 import {sessionManager} from "../../utils/SessionManager.ts";
 import { AdminRoutes } from "../../config/Routes.js";
 import {ROUTES} from "../../config/RoutePaths.js";
-import {LogoClickable} from "../../hooks/Clickables.jsx";
+import {LogoClickable} from "../../components/Clickables.jsx";
 
 const SidebarLink = forwardRef(function SidebarLink({ item, onNavigate }, ref) {
   const Icon = item.icon;
@@ -48,7 +48,7 @@ export default function Sidebar() {
     <>
     
       <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-surface px-4 lg:hidden">
-        <LogoClickable className="h-7" />
+        <LogoClickable className="h-7" navigateTo={ROUTES.admin.dashboard.overview} />
         <button
           type="button"
           onClick={() => open()}
@@ -77,7 +77,7 @@ export default function Sidebar() {
           ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between gap-2.5 px-6 py-6">
-          <LogoClickable className="h-8" />
+          <LogoClickable className="h-8" navigateTo={ROUTES.admin.dashboard.overview} />
 
           <button
             type="button"

@@ -20,8 +20,7 @@ import DentalRecordForm from "../pages/admin/dental/dentalForm";
 import DentalRecordView from "../pages/admin/dental/dentalViewRec";
 
 import AppointmentsTab from "../pages/admin/appointments/appointmentsTab";
-
-
+import PageNotFound from "../pages/public/PageNotFound";
 import ProtectedRoute from "../components/ProtectedRoute.jsx"
 
 function AppRoutes() {
@@ -31,6 +30,7 @@ function AppRoutes() {
         {/* Public */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="*" element={<PageNotFound />} />
         </Route>
 
         {/* Admin Showcase / Login */}
