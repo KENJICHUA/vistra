@@ -1,9 +1,44 @@
 export const medRecords = [
-  { id: "MED-1042", student: "Kenji Chua", course: "BS Computer Science", time: "9:00 AM", type: "Medical Consultation", status: "cleared" },
-  { id: "MED-1043", student: "Ivan Mejorada", course: "BS Nursing", time: "9:30 AM", type: "Follow-up", status: "secondOpinion" },
-  { id: "MED-1044", student: "Cjay Gonzales", course: "BS Architecture", time: "10:00 AM", type: "Dental Consultation", status: "recovered" },
-  { id: "MED-1045", student: "Joshua Lapitan", course: "BS Civil Engineering", time: "10:15 AM", type: "Medical Consultation", status: "referred" },
-  { id: "MED-1046", student: "Rosh Ingel", course: "BS Accountancy", time: "10:45 AM", type: "Medical Consultation", status: "ongoingTreatment" },
+  {
+    id: "MED-1042",
+    student: "Kenji Chua",
+    course: "BS Computer Science",
+    time: "9:00 AM",
+    type: "Medical Consultation",
+    status: "cleared",
+  },
+  {
+    id: "MED-1043",
+    student: "Ivan Mejorada",
+    course: "BS Psychology",
+    time: "9:30 AM",
+    type: "Follow-up",
+    status: "secondOpinion",
+  },
+  {
+    id: "MED-1044",
+    student: "Cjay Gonzales",
+    course: "BS Industrial Engineering",
+    time: "10:00 AM",
+    type: "Medical Consultation",
+    status: "recovered",
+  },
+  {
+    id: "MED-1045",
+    student: "Joshua Lapitan",
+    course: "BS Electronics Engineering",
+    time: "10:15 AM",
+    type: "Medical Consultation",
+    status: "referred",
+  },
+  {
+    id: "MED-1046",
+    student: "Rosh Ingel",
+    course: "BS Accountancy",
+    time: "10:45 AM",
+    type: "Medical Consultation",
+    status: "ongoingTreatment",
+  },
 ];
 
 export const students = [
@@ -23,7 +58,7 @@ export const students = [
   {
     id: "MED-1043",
     name: "Ivan Mejorada",
-    course: "BS Nursing",
+    course: "BS Psychology",
     yearSection: "3rd Year, Section B",
     address: "45 Narra Ave.",
     barangay: "Barangay Batasan Hills",
@@ -36,8 +71,8 @@ export const students = [
   {
     id: "MED-1044",
     name: "Cjay Gonzales",
-    course: "BS Architecture",
-    yearSection: "5th Year, Section A",
+    course: "BS Industrial Engineering",
+    yearSection: "2nd Year, Section A",
     address: "8 Acacia Lane",
     barangay: "Barangay Commonwealth",
     age: 22,
@@ -49,7 +84,7 @@ export const students = [
   {
     id: "MED-1045",
     name: "Joshua Lapitan",
-    course: "BS Civil Engineering",
+    course: "BS Electronics Engineering",
     yearSection: "4th Year, Section C",
     address: "27 Kalachuchi St.",
     barangay: "Barangay Payatas",
@@ -74,9 +109,18 @@ export const students = [
   },
 ];
 
-export const civilstatus = ["Single", "Married", "Widowed", "Separated", "Divorced"];
+export const civilstatus = [
+  "Single",
+  "Married",
+  "Widowed",
+  "Separated",
+  "Divorced",
+];
 
-export const type = ["Medical Consultation", "Follow up"];
+export const type = [
+  "Medical Consultation",
+  "Follow-up",
+];
 
 export const emptyDetails = {
   course: "",
@@ -90,5 +134,3 @@ export const emptyDetails = {
   yearSection: "",
   type: "",
 };
-
-

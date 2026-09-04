@@ -1,7 +1,7 @@
 import React from "react";
-import { GenericTable, GenericRow } from "../../../components/Table.jsx";
-import { getTableColumns } from "../../../utils/TableUtils.js";
-import { ROUTES } from "../../../config/RoutePaths";
+import { GenericTable, GenericRow } from "/@/components/Table.jsx";
+import { getTableColumns } from "/@/utils/TableUtils.js";
+import { ROUTES } from "/@/config/RoutePaths.js";
 
 export default function MedicalTable({ medicalRecords }) {
   return (

@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { X } from "lucide-react";
 
 export function Modal({ title, onClose, children, footer, maxWidth = "max-w-sm" }) {
+  useEffect(() => {
+    if (!onClose) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" onClick={onClose}>
       <div

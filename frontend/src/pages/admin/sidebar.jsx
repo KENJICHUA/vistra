@@ -1,15 +1,16 @@
 import React, { forwardRef, useRef } from "react";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
-import { useSidebar } from "../../hooks/UseSidebar.js";
+import { useSidebar } from "/@/hooks/UseSidebar.js";
 import {
   LogOut,
   Menu,
   X,
 } from "lucide-react";
-import {sessionManager} from "../../utils/SessionManager.ts";
-import { AdminRoutes } from "../../config/Routes.js";
-import {ROUTES} from "../../config/RoutePaths.js";
-import {LogoClickable} from "../../components/Clickables.jsx";
+import {sessionManager} from "/@/utils/SessionManager.ts";
+import { AdminRoutes } from "/@/config/Routes.js";
+import {ROUTES} from "/@/config/RoutePaths.js";
+
+import {LogoClickable} from "/@/components/Button.jsx";
 
 const SidebarLink = forwardRef(function SidebarLink({ item, onNavigate }, ref) {
   const Icon = item.icon;
@@ -91,12 +92,14 @@ export default function Sidebar() {
 
         <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-4">
           {AdminRoutes.map((item, index) => (
-            <SidebarLink
-              key={item.path}
-              item={item}
-              onNavigate={() => close()}
-              ref={index === 0 ? firstLinkRef : undefined}
-            />
+
+                <SidebarLink
+                    key={item.path}
+                    item={item}
+                    onNavigate={() => close()}
+                    ref={index === 0 ? firstLinkRef : undefined}
+                />
+
           ))}
         </nav>
 
