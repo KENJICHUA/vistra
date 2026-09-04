@@ -1,8 +1,8 @@
 import React from "react";
 import { dentalRecords } from "./dentalData";
-import { RecordsTablePanel, GenericRow } from "../../../components/Table.jsx";
-import { getTableColumns } from "../../../utils/TableUtils.js";
-import { ROUTES } from "../../../config/RoutePaths.js";
+import { RecordsTablePanel, GenericRow } from "/@/components/Table.jsx";
+import { getTableColumns } from "/@/utils/TableUtils.js";
+import { ROUTES } from "/@/config/RoutePaths.js";
 
 export default function DentalTab() {
     return (

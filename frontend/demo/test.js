@@ -11,6 +11,6 @@ function getTypeIcon(type = "") {
     return found ? found.icon : ClipboardList;
 }
 console.log(getTypeIcon("user"));
-console.log(getTypeIcon("admin"));
+console.log(getTypeIcon("staff"));
 console.log(getTypeIcon("guest"));
 console.log(getTypeIcon(""));

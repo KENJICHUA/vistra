@@ -6,6 +6,7 @@ export interface SessionUser {
 
 const SESSION_KEYS = {
     ACCESS_TOKEN: "access_token",
+    REFRESH_TOKEN: "refresh_token",
     USER: "user",
 } as const;
 
@@ -40,21 +41,35 @@ export const sessionManager = {
         sessionStorage.removeItem(key);
     },
 
-        clear(): void {
+    clear(): void {
         sessionStorage.clear();
     },
-
-        setLogin(
-            accessToken: string,
+    setTokens(
+        accessToken: string,
+        refreshToken: string,
+    ):  void {
+        this.set(SESSION_KEYS.ACCESS_TOKEN, accessToken);
+        this.set(SESSION_KEYS.REFRESH_TOKEN, refreshToken);
+    },
+    setLogin(
+        accessToken: string,
+        refreshToken: string,
         user: SessionUser
     ): void {
         this.set(SESSION_KEYS.ACCESS_TOKEN, accessToken);
+        this.set(SESSION_KEYS.REFRESH_TOKEN, refreshToken);
         this.set(SESSION_KEYS.USER, user);
     },
 
         getAccessToken(): string | null {
         return sessionStorage.getItem(
             SESSION_KEYS.ACCESS_TOKEN
+        );
+    },
+
+    getRefreshToken(): string | null {
+        return sessionStorage.getItem(
+            SESSION_KEYS.REFRESH_TOKEN
         );
     },
 

@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import {
-  AlertCircle,
   ArrowRight,
   Eye,
   EyeOff,
@@ -9,67 +8,60 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
-import {ROUTES} from "../../config/RoutePaths.js";
-import {Logo} from "../../components/Logo.jsx";
-import {useLogin, useLoginForm} from "../../hooks/UseLogin.js";
+import {ROUTES} from "/@/config/RoutePaths.js";
+import {Logo} from "/@/components/Logo.jsx";
+import {useLogin, useLoginForm} from "/src/hooks/UseLogin.js";
+import {useNavigate} from "react-router-dom";
+import {FormInput} from "/src/components/InputCollection.tsx";
 
 export default function AdminLoginPage() {
-  const { credentials, handleChange } = useLoginForm()
-  const {
-    login,
-    isLoading,
-    error
-  } = useLogin()
-
+  const navigate = useNavigate();
+  const { credentials, handleChange, validationErrors, validate } = useLoginForm();
+  const { login, isLoading, isError, error } = useLogin();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(credentials);
+    try {
+      if (!validate()) {
+        return;
+      }
+      await login(credentials);
+      navigate(ROUTES.admin.dashboard.overview);
+    }
+    catch {
+      // Error is already handled by useLogin.
+      }
   };
   return (
-    <div className="min-h-screen bg-background">
-      <main className="flex min-h-screen items-center justify-center py-10">
-        <div className="relative w-full max-w-md px-6">
-          <div className="relative overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
-            <div className="h-1 w-full bg-primary" aria-hidden="true"></div>
+      <div className="min-h-screen bg-background">
+        <main className="flex min-h-screen items-center justify-center py-10">
+          <div className="relative w-full max-w-md px-6">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
+              <div className="h-1 w-full bg-primary" aria-hidden="true"/>
+              <div className="flex flex-col items-center px-8 pt-8 text-center">
+                <a href={ROUTES.admin.dashboard.overview}>
+                  <Logo className="h-11" />
+                </a>
 
-            <div className="flex flex-col items-center px-8 pt-8 text-center">
-              <a href={ROUTES.admin.dashboard.overview}>
-                <Logo className="h-11" />
-              </a>
+                <h1 className="mt-6 font-heading text-2xl font-semibold leading-tight tracking-tight text-textPrimary">
+                  Clinical Staff Login
+                </h1>
 
-              <h1 className="mt-6 font-heading text-2xl font-semibold leading-tight tracking-tight text-textPrimary">
-                Clinical Staff Login
-              </h1>
+                <p className="mt-2 max-w-xs text-xs leading-relaxed text-textSecondary">
+                  Sign in with your Staff ID to access appointments, queues, and student medical records.
+                </p>
+              </div>
 
-              <p className="mt-2 max-w-xs text-xs leading-relaxed text-textSecondary">
-                Sign in with your Staff ID to access appointments, queues, and student medical records.
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="relative p-8">
-              {error ? (
-                <div className="mb-5 flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
-                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} />
-                  <span>{error}</span>
-                </div>
-              ) : null}
-
-              <div>
-                <label
-                  htmlFor="staffId"
-                  className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-textMuted"
-                >
-                  Staff ID
-                </label>
-
+              <form onSubmit={handleSubmit} className="relative p-8">
+                {isError && error && (
+                    <div className="rounded-lg bg-danger/10 p-3 text-sm text-danger">
+                      {error}
+                    </div>
+                )}
                 <div className="relative">
-                  <User
-                    className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted"
-                    strokeWidth={2}
-                  />
-                  <input
+                  <FormInput
+                      label="Staff ID"
                       id="staffId"
                       name="staffId"
                       type="text"
@@ -77,91 +69,83 @@ export default function AdminLoginPage() {
                       value={credentials.staffId}
                       onChange={handleChange}
                       placeholder="e.g. UCC-2481"
-                      className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-3.5 text-sm text-textPrimary placeholder:text-textMuted transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      error={validationErrors.staffId}
+                      icon={ <User className="h-4 w-4" strokeWidth={2} /> }
                   />
                 </div>
-              </div>
-
-              <div className="mt-5">
-                <div className="mb-1.5 flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="block text-xs font-semibold uppercase tracking-wide text-textMuted"
-                  >
-                    Password
-                  </label>
-
+                <div className="mt-5">
+                  <div className="mb-1.5 flex items-center justify-between">
                     <a href="#forgot-password"
-                    className="text-xs font-medium text-primary transition-colors duration-200 hover:text-primaryDark"
-                  >
-                    Forgot password?
-                  </a>
+                       className="text-xs font-medium text-primary transition-colors duration-200 hover:text-primaryDark"
+                    >
+                      Forgot password?
+                    </a>
+                  </div>
+
+                  <div className="relative">
+                    <FormInput
+                        label="Password"
+                        id="password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        value={credentials.password}
+                        onChange={handleChange}
+                        placeholder="••••••••"
+                        error={validationErrors.password}
+                        icon={
+                          <Lock className="h-4 w-4" strokeWidth={2} />
+                        }
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-textMuted transition-colors duration-200 hover:text-textSecondary"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                          <EyeOff className="h-4 w-4" strokeWidth={2} />
+                      ) : (
+                          <Eye className="h-4 w-4" strokeWidth={2} />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
-                <div className="relative">
-                  <Lock
-                    className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted"
-                    strokeWidth={2}
-                  />
+                <label className="mt-4 flex items-center gap-2 text-sm text-textSecondary">
                   <input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      autoComplete="current-password"
-                      value={credentials.password}
-                      onChange={handleChange}
-                      placeholder="••••••••"
-                      className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-10 text-sm text-textPrimary placeholder:text-textMuted transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-border text-primary focus:ring-primary/30"
                   />
-                  <button
-                      type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-textMuted transition-colors duration-200 hover:text-textSecondary"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? (
-                        <EyeOff className="h-4 w-4" strokeWidth={2} />
-                    ) : (
-                        <Eye className="h-4 w-4" strokeWidth={2} />
-                    )}
-                  </button>
-                </div>
-              </div>
+                  Keep me signed in on this device
+                </label>
 
-              <label className="mt-4 flex items-center gap-2 text-sm text-textSecondary">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-border text-primary focus:ring-primary/30"
-                />
-                Keep me signed in on this device
-              </label>
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-semibold text-white shadow-card transition-colors duration-200 hover:bg-primaryDark disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isLoading ? "Signing in..." : "Sign in"}
 
-              <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-semibold text-white shadow-card transition-colors duration-200 hover:bg-primaryDark disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isLoading ? "Signing in..." : "Sign in"}
+                  {isLoading ? (
+                      <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : (
+                      <ArrowRight className="h-4 w-4" />
+                  )}
+                </button>
 
-                {isLoading ? (
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                ) : (
-                    <ArrowRight className="h-4 w-4" />
-                )}
-              </button>
+                <p className="mt-5 flex items-center justify-center gap-1.5 text-xs text-textMuted">
+                  <ShieldCheck className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
+                  Records are encrypted and scoped to your role.
+                </p>
+              </form>
+            </div>
 
-              <p className="mt-5 flex items-center justify-center gap-1.5 text-xs text-textMuted">
-                <ShieldCheck className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
-                Records are encrypted and scoped to your role.
-              </p>
-            </form>
+            <p className="mt-6 text-center text-xs text-textMuted">
+              Access is limited to registered clinic staff. Contact your administrator if you need an account.
+            </p>
           </div>
-
-          <p className="mt-6 text-center text-xs text-textMuted">
-            Access is limited to registered clinic staff. Contact your administrator if you need an account.
-          </p>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
   );
 }

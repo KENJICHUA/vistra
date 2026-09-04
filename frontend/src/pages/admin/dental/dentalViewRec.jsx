@@ -1,15 +1,28 @@
 import React, { useState } from "react";
-import { ArrowLeft, User, ClipboardList, Printer, Stethoscope } from "lucide-react";
-import { ToothArch, upperTeeth, lowerTeeth } from "../../../components/teethDesign.jsx";
-import { InfoField, getInitials } from "../../../utils/RecordInfo.jsx";
-import { ToothViewModal } from "./dentalModal.jsx"
+import { ArrowLeft, ClipboardList, Pencil, Printer, User } from "lucide-react";
+import { InfoField, getInitials } from "/@/utils/RecordInfo.jsx";
+import {
+  ToothArch,
+  ToothNoteModal,
+  upperTeeth,
+  lowerTeeth,
+} from "/@/components/teethDesign.jsx";
+import { EditRecordModal, dentalEditFields } from "/@/components/editModal.jsx";
 
 const exampleDental = {
   recordId: "DEN-0731",
   name: "Kenji Chua",
+  studentId: "20230786-S",
+  address: "123 Rizal Street",
+  barangay: "Barangay San Isidro",
   age: "21",
+  mobileNumber: "0917 234 5678",
   sex: "Male",
-  yearSection: "BS Computer Science, 4th Year",
+  birthday: "2004-03-12",
+  civilStatus: "Single",
+  yearSection: "4th Year - Section A",
+  course: "BS Computer Science",
+  status: "cleared",
   date: "2026-06-02",
   lastVisit: "6 months ago",
   floss: "Yes",
@@ -19,140 +32,249 @@ const exampleDental = {
   notes: "Patient reports occasional sensitivity on the upper right molars.",
   medicalHistory: ["Allergy"],
   toothRecords: {
-    16: { dentition: "permanent", condition: "decayed", notes: "Mild sensitivity, monitor" },
-    26: { dentition: "permanent", condition: "filled", notes: "Filled 2025-11-02" },
-    36: { dentition: "permanent", condition: "missing", notes: "" },
+    16: {
+      dentition: "permanent",
+      condition: "decayed",
+      notes: "Mild sensitivity, monitor",
+    },
+    26: {
+      dentition: "permanent",
+      condition: "filled",
+      notes: "Filled 2025-11-02",
+    },
+    36: {
+      dentition: "permanent",
+      condition: "missing",
+      notes: "",
+    },
   },
 };
 
-export default function DentalRecordView({ record = exampleDental, onBack }) {
+export default function DentalRecordView({
+  record = exampleDental,
+  onBack,
+  onSave,
+}) {
+  const [recordData, setRecordData] = useState(record);
   const [selectedTooth, setSelectedTooth] = useState(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else if (typeof window !== "undefined") {
-      window.history.back();
-    }
+    if (onBack) onBack();
+    else window.history.back();
   };
 
-  const openTooth = (number) => setSelectedTooth(number);
-  const closeTooth = () => setSelectedTooth(null);
+  const handleSaveRecord = (updatedRecord) => {
+    setRecordData(updatedRecord);
+    setIsEditOpen(false);
+    if (onSave) onSave(updatedRecord);
+  };
+
+  const handleSaveTooth = (updatedTooth) => {
+    const updatedRecord = {
+      ...recordData,
+      toothRecords: {
+        ...recordData.toothRecords,
+        [selectedTooth]: updatedTooth,
+      },
+    };
+
+    setRecordData(updatedRecord);
+    setSelectedTooth(null);
+
+    if (onSave) onSave(updatedRecord);
+  };
+
+  const handleClearTooth = () => {
+    const toothRecords = { ...recordData.toothRecords };
+    delete toothRecords[selectedTooth];
+
+    const updatedRecord = {
+      ...recordData,
+      toothRecords,
+    };
+
+    setRecordData(updatedRecord);
+    setSelectedTooth(null);
+
+    if (onSave) onSave(updatedRecord);
+  };
 
   return (
-    <div className="mx-auto w-full max-w-4xl">
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
-        <div className="mb-4 flex items-center justify-between mx-6 mt-6">
-          <button
-            type="button"
-            onClick={handleBack}
-            className="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs font-medium text-textMuted transition-colors duration-150 hover:bg-surfaceMuted hover:text-textPrimary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" strokeWidth={2} />
-            Back to records
-          </button>
+    <div className="mx-auto w-full">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
 
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-textSecondary transition-colors duration-150 hover:bg-surfaceMuted hover:text-textPrimary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-          >
-            <Printer className="h-3.5 w-3.5" strokeWidth={2} />
-            Print record
-          </button>
-        </div>
+        <div className="relative p-6">
+          <div className="mb-6 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-textSecondary hover:text-primary"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to records
+            </button>
 
-        <div className="flex flex-col gap-4 border-b border-border bg-gradient-to-b from-surfaceMuted/60 to-surface p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsEditOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primaryDark"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Edit record
+              </button>
+
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-textSecondary hover:bg-surfaceMuted"
+              >
+                <Printer className="h-3.5 w-3.5" />
+                Print
+              </button>
+            </div>
+          </div>
+
           <div className="flex items-center gap-4">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary">
-              {getInitials(record.name)}
-            </span>
-            <div>
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
+              {getInitials(recordData.name)}
+            </div>
+
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="font-heading text-xl font-semibold text-primaryDark">{record.name}</h1>
-                <span className="rounded-md bg-surfaceMuted px-2 py-0.5 text-xs font-medium text-textMuted">
-                  {record.recordId}
+                <h1 className="font-heading text-2xl font-semibold text-primaryDark">
+                  {recordData.name}
+                </h1>
+
+                <span className="rounded-full border border-border bg-surfaceMuted px-2.5 py-1 text-[10px] font-semibold text-textSecondary">
+                  {recordData.recordId}
                 </span>
               </div>
-              <p className="mt-0.5 text-xs text-textMuted">
-                {record.yearSection} · Exam date {record.date}
-              </p>
-            </div>
-          </div>
-        </div>
 
-        <div className="p-6 sm:p-8">
-          <div className="mb-4 flex items-center gap-2">
-            <User className="h-4 w-4 text-primary" strokeWidth={2} />
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-primary">Personal information</h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-3">
-            <InfoField label="Age" value={record.age} />
-            <InfoField label="Sex" value={record.sex} />
-            <InfoField label="Year and section" value={record.yearSection} span />
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-5 border-t border-border pt-6 sm:grid-cols-3">
-            <InfoField label="Last dental visit" value={record.lastVisit} />
-            <InfoField label="Flosses regularly" value={record.floss} />
-            <InfoField label="Brushing frequency" value={record.brushFrequency} />
-            <InfoField label="Calculus" value={record.calculus} />
-            <InfoField label="Medication" value={record.medication} span />
-          </div>
-
-          <div className="mt-10">
-            <div className="mb-1 flex items-center gap-2 border-t border-border pt-6">
-              <Stethoscope className="h-4 w-4 text-primary" strokeWidth={2} />
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-primary">Odontogram</h2>
-            </div>
-            <p className="mb-4 text-xs text-textMuted">Click a tooth to view its recorded condition.</p>
-
-            <div className="overflow-x-auto rounded-xl border border-border bg-background/40 p-6">
-              <div className="mb-2 flex justify-center">
-                <ToothArch teeth={upperTeeth} flip={false} records={record.toothRecords} onToothClick={openTooth} />
-              </div>
-              <div className="mx-auto my-3 h-px w-full max-w-2xl bg-border" />
-              <div className="mt-2 flex justify-center">
-                <ToothArch teeth={lowerTeeth} flip={true} records={record.toothRecords} onToothClick={openTooth} />
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-textMuted">
+                {recordData.studentId && <span>{recordData.studentId}</span>}
+                <span>•</span>
+                <span>Dental Record</span>
               </div>
             </div>
-          </div>
-
-          <div className="mt-10">
-            <div className="mb-4 flex items-center justify-between gap-2 border-t border-border pt-6">
-              <div className="flex items-center gap-2">
-                <ClipboardList className="h-4 w-4 text-primary" strokeWidth={2} />
-                <h2 className="text-xs font-semibold uppercase tracking-wide text-primary">Medical history</h2>
-              </div>
-            </div>
-
-            {record.medicalHistory?.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {record.medicalHistory.map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-border bg-surfaceMuted/50 px-3 py-1 text-xs font-medium text-textSecondary"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-textMuted">No medical history flagged.</p>
-            )}
-          </div>
-
-          <div className="mt-8 border-t border-border pt-6">
-            <InfoField label="Notes" value={record.notes} span />
           </div>
         </div>
       </div>
 
-      {selectedTooth !== null && (
-        <ToothViewModal
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="rounded-2xl border border-border bg-surface shadow-sm">
+          <div className="border-b border-border px-5 py-4">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4 text-primary" />
+              <h2 className="font-heading text-sm font-semibold text-primaryDark">
+                Patient Information
+              </h2>
+            </div>
+          </div>
+
+          <div className="p-6 gap-y-4 flex flex-col">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+              <InfoField label="Course" value={recordData.course} />
+              <InfoField
+                label="Year and Section"
+                value={recordData.yearSection}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+              <InfoField label="Age" value={recordData.age} />
+              <InfoField label="Sex" value={recordData.sex} />
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+              <InfoField label="Civil status" value={recordData.civilStatus} />
+              <InfoField label="Birthday" value={recordData.birthday} />
+            </div>
+            <div className="grid grid-cols-1 gap-x-4 gap-y-5">
+              <InfoField
+                label="Address"
+                value={`${recordData.address}, ${recordData.barangay}`}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+              <InfoField label="Mobile Number" value={recordData.mobileNumber} />
+              <InfoField label="Exam Date" value={recordData.date} />
+            </div>
+          </div>
+        </div>
+        <div className="lg:col-span-2 rounded-2xl border border-border bg-surface shadow-sm">
+          <div className="border-b border-border px-5 py-4">
+            <div className="flex items-center gap-2">
+              <ClipboardList className="h-4 w-4 text-primary" />
+              <div>
+                <h2 className="font-heading text-sm font-semibold text-primaryDark">
+                  Dental Examination
+                </h2>
+                <p className="text-xs text-textMuted">
+                  Click a tooth to add or edit its record.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-5">
+            <div className="grid grid-cols-2 gap-4 border-b border-border pb-5">
+              <InfoField label="Flosses Regularly" value={recordData.floss} />
+              <InfoField
+                label="Brushing Frequency"
+                value={recordData.brushFrequency}
+              />
+              <InfoField label="Calculus" value={recordData.calculus} />
+              <InfoField label="Medication" value={recordData.medication} />
+            </div>
+
+            <div className="mt-6">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-textMuted">
+                Dental Chart
+              </p>
+
+              <div className="overflow-x-auto rounded-xl border border-border bg-background p-5">
+                <ToothArch
+                  teeth={upperTeeth}
+                  records={recordData.toothRecords || {}}
+                  onToothClick={setSelectedTooth}
+                />
+
+                <div className="my-5 border-t border-dashed border-border" />
+
+                <ToothArch
+                  teeth={lowerTeeth}
+                  flip
+                  records={recordData.toothRecords || {}}
+                  onToothClick={setSelectedTooth}
+                />
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <InfoField label="Clinical Notes" value={recordData.notes} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {selectedTooth && (
+        <ToothNoteModal
           toothNumber={selectedTooth}
-          record={record.toothRecords[selectedTooth]}
-          onClose={closeTooth}
+          initialRecord={recordData.toothRecords?.[selectedTooth]}
+          onClose={() => setSelectedTooth(null)}
+          onClear={handleClearTooth}
+          onSave={handleSaveTooth}
+        />
+      )}
+
+      {isEditOpen && (
+        <EditRecordModal
+          title="Edit dental record"
+          fields={dentalEditFields}
+          data={recordData}
+          onClose={() => setIsEditOpen(false)}
+          onSave={handleSaveRecord}
         />
       )}
     </div>

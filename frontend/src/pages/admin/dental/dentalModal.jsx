@@ -1,4 +1,4 @@
-import { DetailModal } from "../../../components/viewModal.jsx";
+import { DetailModal } from "/@/components/viewModal.jsx";
 
 export const conditionLabels = {
   sound: "Sound (/)",

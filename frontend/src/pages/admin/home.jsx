@@ -10,8 +10,8 @@ import {
   Wind,
   ChevronRight,
 } from "lucide-react";
-import { LiveDot, AdminAnimStyles } from "../../components/adminanim.jsx";
-import Footer from "../public/Footer";
+import { LiveDot, AdminAnimStyles } from "/@/components/adminanim.jsx";
+import Footer from "/@/pages/public/Footer.jsx";
 import { useNavigate } from "react-router-dom";
 
 

@@ -20,5 +20,5 @@ New Feature 0.X.0
 Adding a new endpoint, introducing an optional query parameter.Increment MINOR, reset PATCH to 0.
 
 Bug Fix 0.0.X
-Repairing internal calculation errors, patching security leaks.Increment PATCH only.
+Repairing internal calculation validationErrors, patching security leaks.Increment PATCH only.
 

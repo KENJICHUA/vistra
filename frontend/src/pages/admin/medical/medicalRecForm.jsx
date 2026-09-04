@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Save, ArrowLeft, User, ClipboardList, Info } from "lucide-react";
-import { students, emptyDetails, civilstatus, type as visitTypeOptions } from "./medicalData";
-import { ReadOnlyField } from "../../../utils/ReadOnlyField";
-import { StudentCombobox } from "../../../utils/StudentComboBox";
-import { FieldLabel } from "../../../utils/FieldLabel";
-import { EditableRowsTable } from "../../../utils/EditableRowsTable";
-import { useEditableRows } from "../../../utils/useEditableRows";
+import { students, emptyDetails, type as visitTypeOptions } from "./medicalData";
+import { ReadOnlyField } from "/@/utils/ReadOnlyField.jsx";
+import { StudentCombobox } from "/@/utils/StudentComboBox.jsx";
+import { FieldLabel } from "/@/utils/FieldLabel.jsx";
+import { EditableRowsTable } from "/@/utils/EditableRowsTable.jsx";
+import { useEditableRows } from "/@/utils/useEditableRows.js";
 
 const visitLogColumns = [
   { key: "date", header: "Date", type: "date", width: "w-40" },
@@ -26,20 +26,17 @@ export default function PatientRecordForm({ onBack, onSave }) {
         address: selectedStudent.address,
         barangay: selectedStudent.barangay,
         age: selectedStudent.age,
-        mobileNumber: selectedStudent.mobileNumber,
+        mobile_number: selectedStudent.mobile_number,
         sex: selectedStudent.sex,
         birthday: selectedStudent.birthday,
-        civilStatus: selectedStudent.civilStatus,
-        yearSection: selectedStudent.yearSection,
+        civil_status: selectedStudent.civil_status,
+        year_section: selectedStudent.year_section,
       }
     : emptyDetails;
 
   const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else if (typeof window !== "undefined") {
-      window.history.back();
-    }
+    if (onBack) onBack();
+    else if (typeof window !== "undefined") window.history.back();
   };
 
   const handleClear = () => {
@@ -61,11 +58,8 @@ export default function PatientRecordForm({ onBack, onSave }) {
         .map(({ id, ...rest }) => rest),
     };
 
-    if (onSave) {
-      onSave(record);
-    } else {
-      console.log("Saved record:", record);
-    }
+    if (onSave) onSave(record);
+    else console.log("Saved record:", record);
   };
 
   return (
@@ -80,9 +74,7 @@ export default function PatientRecordForm({ onBack, onSave }) {
       {!selectedStudent && (
         <div className="mb-6 flex items-start gap-1.5 rounded-xl border border-info/30 bg-info/5 px-3.5 py-2.5 text-xs text-info">
           <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-          <span>
-            Search and select an existing student to auto-fill their personal information. If the student is not found, please add them first.
-          </span>
+          <span>Search and select an existing student to auto-fill their personal information. If the student is not found, please add them first.</span>
         </div>
       )}
 
@@ -93,32 +85,28 @@ export default function PatientRecordForm({ onBack, onSave }) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StudentCombobox studentList={students} selectedStudent={selectedStudent} onSelect={setSelectedStudent} />
-
         <ReadOnlyField id="course" label="Course" value={details.course} placeholder="Select a student first" />
         <ReadOnlyField id="address" label="Address" value={details.address} placeholder="Select a student first" />
         <ReadOnlyField id="barangay" label="Barangay" value={details.barangay} placeholder="Select a student first" />
         <ReadOnlyField id="age" label="Age" value={details.age} placeholder="Select a student first" />
-        <ReadOnlyField id="mobileNumber" label="Mobile Number" value={details.mobileNumber} placeholder="Select a student first" />
+        <ReadOnlyField id="mobile_number" label="Mobile Number" value={details.mobile_number} placeholder="Select a student first" />
         <ReadOnlyField id="sex" label="Sex" value={details.sex} placeholder="Select a student first" />
         <ReadOnlyField id="birthday" label="Birthday" value={details.birthday} placeholder="Select a student first" />
-        <ReadOnlyField id="civilStatus" label="Civil Status" value={details.civilStatus} placeholder="Select a student first" />
-        <ReadOnlyField id="yearSection" label="Year and Section" value={details.yearSection} placeholder="Select a student first" />
+        <ReadOnlyField id="civil_status" label="Civil Status" value={details.civil_status} placeholder="Select a student first" />
+        <ReadOnlyField id="year_section" label="Year and Section" value={details.year_section} placeholder="Select a student first" />
 
         <div>
           <FieldLabel htmlFor="type">Type</FieldLabel>
           <select
             id="type"
+            name="type"
             value={visitType}
             onChange={(e) => setVisitType(e.target.value)}
             className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-textPrimary transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
           >
-            <option value="" disabled>
-              Select Type
-            </option>
+            <option value="" disabled>Select Type</option>
             {visitTypeOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
+              <option key={option} value={option}>{option}</option>
             ))}
           </select>
         </div>
@@ -152,11 +140,7 @@ export default function PatientRecordForm({ onBack, onSave }) {
             Clear
           </button>
 
-          <button
-            type="submit"
-            disabled={!selectedStudent}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primaryDark disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary"
-          >
+          <button type="submit" disabled={!selectedStudent} className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primaryDark disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary">
             <Save className="h-4 w-4" strokeWidth={2} />
             Save Record
           </button>
@@ -170,3 +154,4 @@ export default function PatientRecordForm({ onBack, onSave }) {
     </form>
   );
 }
+

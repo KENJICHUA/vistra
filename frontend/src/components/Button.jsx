@@ -1,5 +1,7 @@
 import {Plus} from "lucide-react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {ROUTES} from "/@/config/RoutePaths.js";
+
 export const LinkButton = ({
                                 title,
                                 route,
@@ -25,3 +27,16 @@ export const LinkButton = ({
         </Link>
     );
 };
+
+export function LogoClickable({className = "h-10", navigateTo = ROUTES.public.home}) {
+    const navigate = useNavigate();
+
+    return (
+        <img
+            src="/Vistralogo.png"
+            alt="Vistra Logo"
+            className={`${className} w-auto object-contain cursor-pointer`}
+            onClick={() => navigate(navigateTo)}
+        />
+    );
+}

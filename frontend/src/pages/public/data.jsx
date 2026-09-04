@@ -78,7 +78,7 @@ export const steps = [
   {
     number: "02",
     title: "Check in at the clinic",
-    body: "The nurse pulls up your student record at the admin website and take a quick vitals check at the kiosk.",
+    body: "The nurse pulls up your student record at the staff website and take a quick vitals check at the kiosk.",
   },
   {
     number: "03",
