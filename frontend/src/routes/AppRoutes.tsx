@@ -19,6 +19,7 @@ import NewPatientRecordForm from "/@/pages/admin/patients/patientNewRec.jsx";
 import {PatientsPage, ViewPatientRecord} from "/@/pages/admin/patients/PatientPages";
 import ProtectedPatientRoute from "/@/components/ProtectedPatientRoute";
 import PatientLayout from "/@/layouts/PatientLayout";
+import PatientLoginPage from "/@/pages/patient/login";
 import PatientOverviewTab from "/@/pages/patient/overview/overview";
 import PatientAppointmentsTab from "/@/pages/patient/appointments/appointmentsTab";
 import PatientBookAppointment from "/@/pages/patient/appointments/appointmentBook";
@@ -27,7 +28,6 @@ import PatientMedicalTab from "/@/pages/patient/medical/medicalTab";
 import PatientDentalTab from "/@/pages/patient/dental/dentalTab";
 import PatientProfilePage from "/@/pages/patient/profile/profile";
 import {AppointmentDetailPage, AppointmentPage} from "/@/pages/admin/appointments/AppointmentPage";
-
 
 
 function AppRoutes() {
@@ -44,6 +44,9 @@ function AppRoutes() {
                 {/* Admin Showcase / Login */}
                 <Route path={ROUTES.staff.home} element={<StaffLandingPage/>}/>
                 <Route path={ROUTES.staff.login} element={<StaffLoginPage/>}/>
+
+                {/* Patient Login (standalone page, no layout) */}
+                <Route path={ROUTES.patient.login} element={<PatientLoginPage/>}/>
 
                 {/* Admin */}
 
@@ -82,15 +85,15 @@ function AppRoutes() {
                     </Route>
                 </Route>
 
-                <Route element={<ProtectedPatientRoute />}>
-                    <Route element={<PatientLayout />}>
-                        <Route path={ROUTES.patient.dashboard.overview} element={<PatientOverviewTab />} />
-                        <Route path={ROUTES.patient.dashboard.appointments} element={<PatientAppointmentsTab />} />
-                        <Route path={ROUTES.patient.appointment.bookAppointment} element={<PatientBookAppointment />} />
-                        <Route path={ROUTES.patient.appointment.viewAppointment} element={<PatientAppointmentView />} />
-                        <Route path={ROUTES.patient.dashboard.medical} element={<PatientMedicalTab />} />
-                        <Route path={ROUTES.patient.dashboard.dental} element={<PatientDentalTab />} />
-                        <Route path={ROUTES.patient.profile} element={<PatientProfilePage />} />
+                <Route element={<ProtectedPatientRoute/>}>
+                    <Route element={<PatientLayout/>}>
+                        <Route path={ROUTES.patient.dashboard.overview} element={<PatientOverviewTab/>}/>
+                        <Route path={ROUTES.patient.dashboard.appointments} element={<PatientAppointmentsTab/>}/>
+                        <Route path={ROUTES.patient.appointment.bookAppointment} element={<PatientBookAppointment/>}/>
+                        <Route path={ROUTES.patient.appointment.viewAppointment} element={<PatientAppointmentView/>}/>
+                        <Route path={ROUTES.patient.dashboard.medical} element={<PatientMedicalTab/>}/>
+                        <Route path={ROUTES.patient.dashboard.dental} element={<PatientDentalTab/>}/>
+                        <Route path={ROUTES.patient.profile} element={<PatientProfilePage/>}/>
                     </Route>
                 </Route>
             </Routes>

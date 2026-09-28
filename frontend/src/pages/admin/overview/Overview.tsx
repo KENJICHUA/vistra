@@ -1,5 +1,5 @@
 import React, {useMemo} from "react";
-import {FileText, Stethoscope, Calendar, ChevronRight} from "lucide-react";
+import {FileText, Stethoscope, Calendar} from "lucide-react";
 import StatsGrid from "./Stats";
 import {
     AppointmentTableFormat,
@@ -16,8 +16,13 @@ import {parseTimeToday} from "/@/utils/FormatDate";
 import {Status, statusLabels} from "/@/components/StatusBadge";
 import {CardList} from "/@/components/CardList";
 import {DefaultTablePreset} from "/@/components/table/TableDesignPreset";
-import {HyperlinkText} from "/@/components/Button";
-import {ROUTES} from "/@/config/RoutePaths";
+import {CountUp} from "/@/components/adminanim.jsx";
+
+const PANEL_HEIGHT = "h-[520px]";
+
+const APPOINTMENT_LIMIT = 6;
+
+const COMPACT_TABLE = "[&_td]:py-2.5 [&_td]:text-sm [&_th]:text-xs";
 
 interface ConsultationEntry {
     id: string
@@ -29,13 +34,15 @@ interface ConsultationEntry {
     department: string
 }
 
-interface ConsultationCardProps {
-    entry: ConsultationEntry;
+function RecentBadge({count}: { count: number }) {
+    return (
+        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold tabular-nums text-primary">
+            <CountUp to={count} delay={400}/> recent
+        </span>
+    );
 }
 
-function ConsultationCard({
-                              entry,
-                          }: ConsultationCardProps) {
+function ConsultationCard({entry}: { entry: ConsultationEntry }) {
     return (
         <>
             <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
@@ -45,9 +52,7 @@ function ConsultationCard({
                             {entry.student}
                         </p>
 
-                        <DepartmentBadge
-                            department={entry.department}
-                        />
+                        <DepartmentBadge department={entry.department}/>
                     </div>
 
                     <p className="mt-0.5 break-words text-xs text-textMuted">
@@ -61,39 +66,23 @@ function ConsultationCard({
             </div>
 
             <div className="mt-2 flex items-center gap-1.5 text-xs text-primary">
-                <FileText
-                    className="h-3.5 w-3.5"
-                    strokeWidth={2}
-                />
-
+                <FileText className="h-3.5 w-3.5" strokeWidth={2}/>
                 {statusLabels[entry.status] ?? entry.status}
             </div>
         </>
     );
 }
 
-interface ConsultationsListProps {
-    entries: ConsultationEntry[];
-}
-
-function ConsultationsList({
-                               entries,
-                           }: ConsultationsListProps) {
+function ConsultationsList({entries}: { entries: ConsultationEntry[] }) {
     return (
         <CardList
             items={entries}
             keyExtractor={(entry) => entry.id}
-            renderItem={(entry) => (
-                <ConsultationCard entry={entry}/>
-            )}
+            renderItem={(entry) => <ConsultationCard entry={entry}/>}
             emptyState={
                 <div className="flex flex-col items-center gap-2 py-10 text-center">
-                    <span
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Stethoscope
-                            className="h-5 w-5"
-                            strokeWidth={2}
-                        />
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Stethoscope className="h-5 w-5" strokeWidth={2}/>
                     </span>
 
                     <p className="text-sm font-medium text-textPrimary">
@@ -101,8 +90,7 @@ function ConsultationsList({
                     </p>
 
                     <p className="text-xs text-textMuted">
-                        Walk-ins and clinic visits will show up here as
-                        they're checked in.
+                        Walk-ins and clinic visits will show up here as they're checked in.
                     </p>
                 </div>
             }
@@ -110,35 +98,47 @@ function ConsultationsList({
     );
 }
 
-interface ConsultationPanelProps {
-    filteredRecords: ConsultationEntry[];
-}
-
-function ConsultationPanel({
-                               filteredRecords,
-                           }: ConsultationPanelProps) {
+function ConsultationPanel({filteredRecords}: { filteredRecords: ConsultationEntry[] }) {
     return (
-        <div className="rounded-2xl border border-border bg-surface p-6 shadow-card">
+        <div className={`flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-card ${PANEL_HEIGHT}`}>
             <PanelHeader
                 icon={Stethoscope}
                 title="Medical & Dental Records"
                 subtitle="Live check-in feed"
-                action={
-                    <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                        {filteredRecords.length} recent
-                    </span>
-                }
+                action={<RecentBadge count={filteredRecords.length}/>}
             />
 
-            <div className="mt-5 max-h-96 overflow-x-auto">
+            <div className="mt-5 min-h-0 flex-1 overflow-y-auto">
                 <ConsultationsList entries={filteredRecords}/>
             </div>
         </div>
     );
 }
 
-export default function OverviewTab() {
+function AppointmentsPanel() {
+    const recentAppointments = useMemo(
+        () => APPOINTMENTS.slice(0, APPOINTMENT_LIMIT),
+        []
+    );
 
+    return (
+        <div className={`${PANEL_HEIGHT} ${COMPACT_TABLE}`}>
+            <DefaultTablePreset<AppointmentTableFormat>
+                title="Appointment"
+                icon={Calendar}
+                isLoading={false}
+                data={recentAppointments}
+                columns={AppointmentsColumns}
+                panelAddon={<RecentBadge count={recentAppointments.length}/>}
+                showFilters={false}
+                showPagination={false}
+                fillHeight
+            />
+        </div>
+    );
+}
+
+export default function OverviewTab() {
     const clinicalRecords = useMemo(() => buildClinicalRecords(), []);
 
     const recentRecords = useMemo(() => {
@@ -150,29 +150,9 @@ export default function OverviewTab() {
     return (
         <>
             <StatsGrid stats={[]}/>
-            <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <div className="reveal-group mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
                 <ConsultationPanel filteredRecords={recentRecords}/>
-                <DefaultTablePreset<AppointmentTableFormat>
-                    title="Appointment"
-                    icon={Calendar}
-                    isLoading={false}
-                    data={APPOINTMENTS}
-                    columns={AppointmentsColumns}
-                    panelAddon={
-                        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-                            {APPOINTMENTS.length} recent
-                        </span>
-                    }
-                    renderAction={
-                        (appointment) => (
-                            <HyperlinkText
-                                title={`View`}
-                                link={`${ROUTES.staff.patient.patientRecordTab}/${appointment.id}`}
-                                icon={ChevronRight}
-                            />
-                        )
-                    }
-                />
+                <AppointmentsPanel/>
             </div>
         </>
     );
