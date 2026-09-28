@@ -21,12 +21,8 @@ export function AppointmentPage() {
 }
 
 export function AppointmentDetailPage() {
-    const appointmentQuery = useAppointmentQuery()
-
     return (
-        <AppointmentProvider query={appointmentQuery}>
-            <AppointmentDetailView/>
-        </AppointmentProvider>
+        <AppointmentDetailView/>
     )
 
 }

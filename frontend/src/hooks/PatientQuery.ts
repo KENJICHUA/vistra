@@ -23,6 +23,10 @@ export function usePatientQuery(filters?: PatientFilters) {
                 signal
             );
 
+            if (!data.data) {
+                throw new Error("Patient data is missing");
+            }
+
             return data.data;
         },
         refetchOnWindowFocus: false,
@@ -41,6 +45,10 @@ export function usePatientDebouncedQuery(filters?: PatientFilters) {
                 signal
             );
 
+            if (!data.data) {
+                throw new Error("Patient data is missing");
+            }
+
             return data.data;
         },
 
@@ -57,6 +65,10 @@ export function usePatientRecordSummaryQuery(patientId: string) {
                 patientId,
                 signal
             );
+
+            if (!data.data) {
+                throw new Error("Patient data is missing");
+            }
 
             return data;
         },

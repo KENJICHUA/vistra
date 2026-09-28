@@ -11,6 +11,10 @@ export function useAppointmentQuery(filters?: AppointmentFilters) {
                 signal
             );
 
+            if (!data.data) {
+                throw new Error("Appointment data is missing");
+            }
+
             return data.data;
         },
         refetchOnWindowFocus: false,
@@ -29,6 +33,10 @@ export function useAppointmentByIdQuery(
                 patientId,
                 signal
             );
+
+            if (!data.data) {
+                throw new Error("Appointment data is missing");
+            }
 
             return data.data;
         },
