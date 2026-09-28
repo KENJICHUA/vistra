@@ -27,6 +27,7 @@ import PatientMedicalTab from "/@/pages/patient/medical/medicalTab";
 import PatientDentalTab from "/@/pages/patient/dental/dentalTab";
 import PatientProfilePage from "/@/pages/patient/profile/profile";
 import {AppointmentDetailPage, AppointmentPage} from "/@/pages/admin/appointments/AppointmentPage";
+import {DentalPage} from "/@/pages/admin/dental/DentalPage";
 
 
 
@@ -54,9 +55,9 @@ function AppRoutes() {
                         <Route path={ROUTES.staff.medical.createNewRecord} element={<PatientRecordForm/>}/>
                         <Route path={ROUTES.staff.medical.viewRecord} element={<PatientRecordView/>}/>
 
-                        <Route path={ROUTES.staff.dashboard.dental} element={<DentalTab/>}/>
+                        <Route path={ROUTES.staff.dashboard.dental} element={<DentalPage/>}/>
                         <Route path={ROUTES.staff.dental.createNewRecord} element={<DentalRecordForm/>}/>
-                        <Route path={ROUTES.staff.dental.viewRecord} element={<DentalRecordView/>}/>
+                        <Route path={ROUTES.staff.dental.view.route} element={<DentalRecordView/>}/>
 
                         <Route
                             path={ROUTES.staff.dashboard.appointments}

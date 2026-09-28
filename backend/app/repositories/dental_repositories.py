@@ -72,6 +72,16 @@ class DentalRepositories:
             .eq("course", filters.course)
         )
 
+        if filters.date:
+            query = (
+                query
+                .gte("visit_date", filters.date)
+                .lt(
+                    "visit_date",
+                    filters.date + timedelta(days=1)
+                )
+            )
+
         if filters.search:
             like = f"%{filters.search}%"
             query = query.or_(

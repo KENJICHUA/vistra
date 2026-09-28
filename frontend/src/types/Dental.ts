@@ -23,9 +23,20 @@ export const toothConditionOptions = [
     {value: "unerupted", label: "Unerupted"},
     {value: "supernumerary", label: "Supernumerary"},
 ] satisfies { value: ToothCondition; label: string }[];
+
 type ToothRecord = {
     toothNumber: number;
     dentition: Dentition;
     condition: ToothCondition;
     notes: string;
 };
+
+export const dentalStatuses = {
+    ongoingTreatment: "Ongoing Treatment",
+    followUp: "Follow-up",
+    declined: "Declined",
+    completed: "Completed",
+    referred: "Referred",
+} as const;
+
+export type DentalStatus = keyof typeof dentalStatuses;

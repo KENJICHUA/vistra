@@ -1,4 +1,4 @@
-import {Dentition, ToothCondition} from "/@/types/Dental"
+import {DentalStatus, Dentition, ToothCondition} from "/@/types/Dental"
 
 export interface ToothSchema {
     id: string
@@ -25,4 +25,14 @@ export interface CreateDentalVisit {
     notes: string
 
     tooth_records: CreateToothRequest[];
+}
+
+export interface DentalVisitSchema {
+    id: number;
+    patient_id: string;
+    patient_name: string;
+    course: string;
+    visit_date: string;
+    staff_id: string;
+    status: DentalStatus;
 }
