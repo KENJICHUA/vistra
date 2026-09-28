@@ -1,11 +1,14 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { Save, ArrowLeft, User, ClipboardList, Info } from "lucide-react";
 import { students, emptyDetails, type as visitTypeOptions } from "./medicalData.tsx";
+import { statusEditFields } from "/@/components/editModal.jsx";
 import { ReadOnlyField } from "/@/utils/ReadOnlyField.jsx";
 import { StudentCombobox } from "/src/utils/StudentComboBox.jsx";
 import { FieldLabel } from "/@/utils/FieldLabel.jsx";
 import { EditableRowsTable } from "/@/utils/EditableRowsTable.jsx";
 import { useEditableRows } from "/@/utils/useEditableRows.js";
+
+const statusOptions = statusEditFields.find((f) => f.key === "status").options;
 
 const visitLogColumns = [
   { key: "date", header: "Date", type: "date", width: "w-40" },
@@ -15,9 +18,10 @@ const visitLogColumns = [
 
 const emptyVisitRow = () => ({ date: "", complaint: "", treatment: "" });
 
-export default function PatientRecordForm() {
+export default function PatientRecordForm({ onSave }) {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [visitType, setVisitType] = useState("");
+  const [status, setStatus] = useState("");
   const { rows: visitRows, addRow, removeRow, updateRow, resetRows } = useEditableRows(emptyVisitRow, 1);
 
   const details = selectedStudent
@@ -35,12 +39,13 @@ export default function PatientRecordForm() {
     : emptyDetails;
 
   const handleBack = () => {
-      if (typeof window !== "undefined") window.history.back();
+    if (typeof window !== "undefined") window.history.back();
   };
 
   const handleClear = () => {
     setSelectedStudent(null);
     setVisitType("");
+    setStatus("");
     resetRows();
   };
 
@@ -52,9 +57,10 @@ export default function PatientRecordForm() {
       student: selectedStudent,
       details,
       type: visitType,
+      status,
       visits: visitRows
         .filter((row) => row.date || row.complaint || row.treatment)
-        .map(({  ...rest }) => rest),
+        .map(({ ...rest }) => rest),
     };
 
     if (onSave) onSave(record);
@@ -109,6 +115,22 @@ export default function PatientRecordForm() {
             ))}
           </select>
         </div>
+
+        <div>
+          <FieldLabel htmlFor="status">Status</FieldLabel>
+          <select
+            id="status"
+            name="status"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-textPrimary transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="" disabled>Select Status</option>
+            {statusOptions.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="mt-10">
@@ -153,4 +175,3 @@ export default function PatientRecordForm() {
     </form>
   );
 }
-

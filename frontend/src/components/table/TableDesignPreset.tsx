@@ -84,7 +84,7 @@ function DefaultTableContent<T extends { id: string }>({
                     action={panelAddon}
                 />
 
-                <div className="border-t border-border"/>
+                <div className="border-t border-border mt-3"/>
 
                 <div className="relative overflow-visible">
                     <TableFilters

@@ -12,6 +12,9 @@ import {getFieldErrors, removeEmptyValues} from "/@/utils/Formatters";
 import {useCreateDentalVisit} from "/@/hooks/DentalQuery";
 import {CreateDentalVisit} from "/@/api/schema/DentalSchema";
 import {sessionManager} from "/@/utils/SessionManager";
+import {statusEditFields} from "/@/components/editModal.jsx";
+
+const statusOptions = statusEditFields.find((f) => f.key === "status").options;
 
 const medicalHistoryItems = ["Allergy", "Asthma", "Bleeder", "Diabetes", "Epilepsy", "Heart Disease", "Hypertension", "Others"];
 
@@ -20,7 +23,7 @@ const oralStatusRows = ["Date of Oral Examination", "Dental Caries", "Gingivitis
 const  dentalStudentFields = [
     {id: "age", label: "Age"},
     {id: "sex", label: "Gender"},
-    {id: "year_section", label: "Year and section / course_department", span: "sm:col-span-3"},
+    {id: "year_section", label: "Year and section / course / department", span: "sm:col-span-3"},
 ];
 
 
@@ -315,7 +318,7 @@ function DentalRecordHeader() {
 
 function DentalHabitsSection() {
     return (
-        <div className="mt-6 grid grid-cols-1 gap-4 border-t border-border pt-6">
+        <div className="mt-6 grid grid-cols-1 gap-4 border-t border-border pt-6 sm:grid-cols-2">
             <div>
                 <FieldLabel htmlFor="last_dental_visit">
                     When was the last time you visited a dentist?
@@ -328,6 +331,21 @@ function DentalHabitsSection() {
                     placeholder="e.g. 6 months ago"
                     className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-textPrimary placeholder:text-textMuted transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
+            </div>
+
+            <div>
+                <FieldLabel htmlFor="status">Status</FieldLabel>
+                <select
+                    id="status"
+                    name="status"
+                    defaultValue=""
+                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-textPrimary transition-colors duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                >
+                    <option value="" disabled>Select Status</option>
+                    {statusOptions.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                    ))}
+                </select>
             </div>
 
             <div>
@@ -423,6 +441,7 @@ export default function DentalRecordForm() {
             floss: formData.floss === "true",
             calculus_severity: String(formData.calculus_severity ?? ""),
             current_medication: String(formData.current_medication ?? ""),
+            status: String(formData.status ?? ""),
             notes: String(formData.notes ?? ""),
             patient_id: selectedStudent.patient_id,
             tooth_records: Object.values(toothRecords),
