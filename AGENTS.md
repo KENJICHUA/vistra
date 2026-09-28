@@ -13,7 +13,8 @@ Backend: FastAPI + Supabase (no ORM). Frontend: React 19 + Vite + Tailwind + Rea
 - `backend/app/config/settings.py`, `security.py` – env + auth
 - `backend/app/database/database_client.py` – global `supabase`, per-request `get_supabase_for_user`, `supabase_admin`
 - `backend/app/enums/`, `backend/app/utils/` – `email_utils.py`, `supabase_query_builder.py`, `validator/common.py`
-- `backend/tests/` – manual scripts only, require live creds. No pytest.
+- `backend/tests/` – manual debug scripts only, require live creds. No pytest.
+- `postman/postman/collections/VISTRA API Tests/` – automated API tests (Postman). `Auth/` + `Staff/` have requests with `pm.test()` assertions; `Appointments/`, `Dental/`, `Medical/`, `Patients/` are placeholder folders. Env: `postman/postman/environments/VISTRA local-1.environment.yaml` (`base_url`, `user_id`, `access_token`, `refresh_token`). Spec mirror: `postman/postman/specs/VISTRA_API_TESTS/VISTRA_API_TESTS.yaml`.
 - `frontend/src/main.jsx` → `App.jsx` → `routes/AppRoutes.tsx`
 - `frontend/src/api/` – `axios_client.ts` (active), `client.ts` (deprecated), `*.api.ts`, `schema/*`, `errors.ts`
 - `frontend/src/config/ApiConfig.ts`, `RoutePaths.ts` – single source for URLs/routes
@@ -55,6 +56,7 @@ Frontend `frontend/.env`: `VITE_LOCAL_API_URL` (`http://127.0.0.1:8000`), `VITE_
 - Mixed `.jsx/.tsx` allowed (`allowJs:true`). Keep new code `.tsx`/`.ts`.
 
 ## Verification
-- Backend: `uvicorn app.main:app --reload`, check `/docs` and `GET /api/health`. No test runner configured – manually verify changed endpoints.
+- Backend: `uvicorn app.main:app --reload`, check `/docs` and `GET /api/health`.
+- Automated API tests are Postman, not pytest: open `postman/postman/collections/VISTRA API Tests/` in Postman with env `VISTRA local` (`base_url=http://localhost:8000`), run Collection Runner in order – `Auth/Login` chains `access_token` via `pm.environment.set()`. Current coverage: `POST /staff/auth/login` (200 + token, 401 invalid), `GET /staff/{user_id}/` (200 + shape, 401 no token, 404 no ID). When adding/changing endpoints, add/extend requests + `pm.test()` scripts there, not `backend/tests/`.
 - Frontend: `npm run dev`, `npm run build` must pass. `npm run lint` only checks JS – also run `npx tsc --noEmit` for TS changes.
 - Cross-check: backend route prefix must match `API_ENDPOINTS`; frontend `VITE_*_API_URL` must match running backend port.

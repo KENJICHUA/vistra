@@ -1,3 +1,8 @@
+from app.schemas.query import FilterDental
+from app.schemas.response_dto.reponses import PaginatedResponse
+from app.utils.supabase_query_builder import SupabaseQueryBuilder
+
+
 class DentalRepositories:
     def __init__(self, supabase):
         self.supabase = supabase
@@ -50,3 +55,40 @@ class DentalRepositories:
         )
 
         return response.data
+
+    def get_dental_visits(self, filters: FilterDental):
+        query = (
+            SupabaseQueryBuilder(
+                self.supabase,
+                "dental_tab",
+                columns=(
+                    "id, patient_id, patient_name, course, "
+                    "visit_date, staff_id, status"
+                ),
+                count="exact",
+            )
+            .order("visit_date", desc=True)
+            .eq("status", filters.status)
+            .eq("course", filters.course)
+        )
+
+        if filters.search:
+            like = f"%{filters.search}%"
+            query = query.or_(
+                f"patient_name.ilike.{like},"
+                f"patient_id.ilike.{like},"
+            )
+
+        response = (
+            query
+            .paginate(filters.page, filters.page_size)
+            .build()
+            .execute()
+        )
+
+        return PaginatedResponse(
+            items=response.data or [],
+            total=response.count or 0,
+            page=filters.page,
+            page_size=filters.page_size,
+        )

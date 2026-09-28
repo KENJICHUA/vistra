@@ -31,3 +31,19 @@ def create_dental_record(request: DentalVisitCreateRequest, supabase, current_us
             "success": False,
             "error": str(e)
         }
+
+
+def get_all_dental_visits(filters, supabase):
+    try:
+        dental_repository = DentalRepositories(supabase)
+        response = dental_repository.get_dental_visits(filters)
+
+        return {
+            "success": True,
+            "data": response
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": str(e)
+        }
