@@ -1,0 +1,63 @@
+$kind: http-request
+url: "{{base_url}}/staff/"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+body:
+  type: json
+  content: "{\r
+
+    \    \"staff_id\": \"STFT-{{$timestamp}}\",\r
+
+    \    \"first_name\": \"Test\",\r
+
+    \    \"last_name\": \"Staff\",\r
+
+    \    \"middle_name\": \"Q\",\r
+
+    \    \"password\": \"TestPass123!\",\r
+
+    \    \"position\": \"Nurse\",\r
+
+    \    \"specialty\": \"General\",\r
+
+    \    \"phone\": \"09170000000\",\r
+
+    \    \"email\": \"test.staff@example.com\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Create staff returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Staff creation succeeds\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(true);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Success message is returned\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json).to.have.property(\"message\");\r
+
+      \    });"
+    language: text/javascript
+order: 4000
