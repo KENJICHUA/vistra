@@ -1,8 +1,7 @@
-import {CreateToothRequest, ToothSchema} from "/@/api/schema/DentalSchema";
+import {CreateToothRequest} from "/@/api/schema/DentalSchema";
 import {ToothModal} from "/@/components/dental/ToothModal";
 import {FormInput} from "/@/components/InputCollection";
 import {Dentition, ToothCondition, toothConditionOptions} from "/@/types/Dental";
-import {useState} from "react";
 import {useForm} from "/@/hooks/Form";
 
 interface ToothNoteModalProps {

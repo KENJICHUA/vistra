@@ -3,7 +3,11 @@ from supabase import Client
 
 from app.config.security import get_current_user
 from app.database.database_client import get_supabase_for_user
-from app.services.dental import create_dental_record, get_all_dental_visits
+from app.services.dental import (
+    create_dental_record,
+    get_all_dental_visits,
+    get_dental_record_by_id,
+)
 from app.schemas.dental import DentalVisitCreateRequest
 from app.schemas.query import FilterDental
 
@@ -29,3 +33,12 @@ def get_dental_visits(
         supabase: Client = Depends(get_supabase_for_user)
 ):
     return get_all_dental_visits(filters, supabase)
+
+
+@protected_dental_router.get("/{patient_id}/{dental_visit_id}")
+def get_dental_record(
+        patient_id: str,
+        dental_visit_id: int,
+        supabase: Client = Depends(get_supabase_for_user)
+):
+    return get_dental_record_by_id(patient_id, dental_visit_id, supabase)
