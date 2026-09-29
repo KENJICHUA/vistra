@@ -102,3 +102,19 @@ class DentalRepositories:
             page=filters.page,
             page_size=filters.page_size,
         )
+
+    def get_dental_record(self, patient_id: str, dental_visit_id: int):
+        response = (
+            self.supabase
+            .table("dental_record_view")
+            .select("*")
+            .eq("patient_id", patient_id)
+            .eq("dental_visit_id", str(dental_visit_id))
+            .limit(1)
+            .execute()
+        )
+
+        if not response.data:
+            return None
+
+        return response.data[0]

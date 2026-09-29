@@ -1,3 +1,5 @@
+from fastapi import HTTPException, status
+
 from app.schemas.dental import DentalVisitCreateRequest
 
 from app.repositories.dental_repositories import DentalRepositories
@@ -47,3 +49,29 @@ def get_all_dental_visits(filters, supabase):
             "success": False,
             "message": str(e)
         }
+
+
+def get_dental_record_by_id(patient_id: str, dental_visit_id: int, supabase):
+    try:
+        dental_repository = DentalRepositories(supabase)
+        response = dental_repository.get_dental_record(patient_id, dental_visit_id)
+
+        if response:
+            return {
+                "success": True,
+                "data": response
+            }
+
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dental record not found"
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )

@@ -1,5 +1,5 @@
-import {CreateDentalVisit} from "/@/api/schema/DentalSchema";
-import {createDentalVisit, getDentalVisit} from "/@/api/dental.api";
+import {CreateDentalVisit, DentalRecordDetailSchema, DentalVisitSchema} from "/@/api/schema/DentalSchema";
+import {createDentalVisit, getDentalRecordById, getDentalVisit} from "/@/api/dental.api";
 
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {AppointmentFilters, DentalVisitFilters} from "/@/api/schema/FilterSchemaCollection";
@@ -30,4 +30,21 @@ export function useDentalQuery(filters?: DentalVisitFilters ) {
             return data.data;
         }
     })
+}
+
+export function useDentalVisitDetail(patientId?: string, dentalId?: string) {
+    return useQuery({
+        queryKey: ["dental", patientId, dentalId],
+        queryFn: async ({signal}): Promise<DentalRecordDetailSchema | null> => {
+            const {data} = await getDentalRecordById(
+                patientId as string,
+                dentalId as string,
+                signal
+            );
+
+            return data.data ?? null;
+        },
+        enabled: Boolean(patientId && dentalId),
+        refetchOnWindowFocus: false,
+    });
 }

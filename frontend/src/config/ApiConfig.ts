@@ -31,6 +31,7 @@ export const API_ENDPOINTS = {
     },
     dental: {
         create_dental_visit: "/dental/",
-        get_dental_visit: "/dental/"
+        get_dental_visit: "/dental/",
+        get_dental_record: (patientId: string, dentalId: string) => `/dental/${patientId}/${dentalId}`,
     }
 };
