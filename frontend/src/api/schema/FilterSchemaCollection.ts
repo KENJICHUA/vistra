@@ -35,3 +35,15 @@ export interface DentalVisitFilters {
     total?: number;
     total_pages?: number
 }
+
+export interface MedicalVisitFilters {
+    search?: string;
+    status?: string;
+    date?: string;
+    course?: string;
+
+    page?: number;
+    page_size?: number;
+    total?: number;
+    total_pages?: number
+}
