@@ -25,6 +25,30 @@ class SupabaseQueryBuilder:
 
         return self
 
+    def gt(self, column: str, value):
+        if value is not None:
+            self.query = self.query.gt(column, value)
+
+        return self
+
+    def gte(self, column: str, value):
+        if value is not None:
+            self.query = self.query.gte(column, value)
+
+        return self
+
+    def lt(self, column: str, value):
+        if value is not None:
+            self.query = self.query.lt(column, value)
+
+        return self
+
+    def lte(self, column: str, value):
+        if value is not None:
+            self.query = self.query.lte(column, value)
+
+        return self
+
     def ilike(self, column: str, value: str):
         if value:
             self.query = self.query.ilike(column, value)
