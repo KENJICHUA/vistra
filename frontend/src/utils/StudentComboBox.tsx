@@ -171,7 +171,13 @@ export function StudentCombobox({
                         open
                             ? query
                             : selectedStudent
-                                ? `${selectedStudent.first_name} ${selectedStudent.middle_name} ${selectedStudent.last_name}`
+                                ? [
+                                    selectedStudent.first_name,
+                                    selectedStudent.middle_name,
+                                    selectedStudent.last_name,
+                                ]
+                                    .filter(Boolean)
+                                    .join(" ")
                                 : query
                     }
                     onFocus={handleFocus}
@@ -234,7 +240,9 @@ export function StudentCombobox({
                                     >
                                         <span className="flex flex-col">
                                             <span className="font-medium text-textPrimary">
-                                                {student.first_name} {student.middle_name} {student.last_name}
+                                                {[student.first_name, student.middle_name, student.last_name]
+                                                    .filter(Boolean)
+                                                    .join(" ")}
                                             </span>
 
                                             <span className="text-xs text-textMuted">

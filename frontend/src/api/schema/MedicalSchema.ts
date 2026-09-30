@@ -7,3 +7,16 @@ export interface MedicalVisitSchema {
     staff_id: string;
     status: string;
 }
+
+export interface MedicalVisitRow {
+    date: string;
+    complaint: string;
+    treatment: string;
+}
+
+export interface CreateMedicalVisit {
+    patient_id: string;
+    type: string;
+    status: string;
+    visits: MedicalVisitRow[];
+}

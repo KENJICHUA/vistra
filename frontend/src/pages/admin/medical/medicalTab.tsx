@@ -1,19 +1,45 @@
-import React from "react";
+import {useMemo} from "react";
 import {ChevronRight, Plus, Stethoscope} from "lucide-react";
-import {medRecords, medData, MedicalColumns} from "./medicalData";
+import {medData, MedicalColumns} from "./medicalData";
 import {ROUTES} from "/@/config/RoutePaths.js";
 import {DefaultTablePreset} from "/@/components/table/TableDesignPreset";
 import {HyperlinkText, LinkButton} from "/@/components/Button";
+import {MedicalVisitFilters} from "/@/api/schema/FilterSchemaCollection";
+import {useMedicalContext} from "/@/context/PaginatedContext";
+import {removeNullFilters} from "/@/components/Filters";
+import {MedicalModel} from "/@/repository/MedicalModel";
 
-export default function MedicalTab() {
+interface MedicalTabProps {
+    setFilters: (filters: MedicalVisitFilters) => void;
+}
+
+export default function MedicalTab({setFilters}: MedicalTabProps) {
+    const {
+        items: medical,
+        totalPages,
+        page,
+        isLoading,
+    } = useMedicalContext();
+
+    const rows = useMemo(
+        () =>
+            medical.map((visit) => {
+                const medicalModel = new MedicalModel(visit);
+
+                return medicalModel.UiTableFormat();
+            }),
+        [medical]
+    );
+
     return (
         <DefaultTablePreset<medData>
             title="Medical"
-            isLoading={false}
             icon={Stethoscope}
-            data={medRecords}
-            
+            isLoading={isLoading}
+            data={rows}
             columns={MedicalColumns}
+            totalPages={totalPages}
+            page={page}
             panelAddon={
                 <LinkButton
                     title={`New Medical Record`}
@@ -22,15 +48,22 @@ export default function MedicalTab() {
                 />
             }
             renderAction={
-                (medical) => (
+                (record) => (
                     <HyperlinkText
                         title={`View`}
-                        link={`${ROUTES.staff.medical.viewRecord}`}
-                        // link={`${ROUTES.staff.medical.viewRecord}/${medical.id}`}
+                        link={`${ROUTES.staff.medical.view.build(record.patient_id, record.id)}`}
                         icon={ChevronRight}
                     />
                 )
 
+            }
+            onRun={(search, filters, page, pageSize) =>
+                setFilters({
+                    search,
+                    ...removeNullFilters(filters),
+                    page,
+                    page_size: pageSize,
+                })
             }
         />
 

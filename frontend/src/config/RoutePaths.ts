@@ -15,7 +15,12 @@ export const ROUTES = {
         },
         medical: {
             createNewRecord: "/staff/medical/new",
-            viewRecord: "/staff/medical/view",
+            view: {
+                route: "/staff/medical/view/:patientId/:medicalId",
+
+                build: (patientId: string, medicalId: string) =>
+                    `/staff/medical/view/${patientId}/${medicalId}`,
+            },
         },
         dental: {
             createNewRecord: "/staff/dental/new",

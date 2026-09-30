@@ -7,7 +7,7 @@ import LandingPage from "/@/pages/public/landingpage";
 import StaffLandingPage from "/@/pages/admin/home";
 import StaffLoginPage from "/@/pages/admin/login";
 import OverviewTab from "/@/pages/admin/overview/Overview";
-import MedicalTab from "/@/pages/admin/medical/medicalTab";
+import {MedicalPage} from "/@/pages/admin/medical/MedicalPage";
 import PatientRecordForm from "/@/pages/admin/medical/medicalRecForm";
 import PatientRecordView from "/@/pages/admin/medical/medicalViewRec";
 import DentalTab from "/@/pages/admin/dental/dentalTab";
@@ -51,9 +51,9 @@ function AppRoutes() {
                 <Route element={<ProtectedRoute/>}>
                     <Route element={<AdminLayout/>}>
                         <Route path={ROUTES.staff.dashboard.overview} element={<OverviewTab/>}/>
-                        <Route path={ROUTES.staff.dashboard.medical} element={<MedicalTab/>}/>
+                        <Route path={ROUTES.staff.dashboard.medical} element={<MedicalPage/>}/>
                         <Route path={ROUTES.staff.medical.createNewRecord} element={<PatientRecordForm/>}/>
-                        <Route path={ROUTES.staff.medical.viewRecord} element={<PatientRecordView/>}/>
+                        <Route path={ROUTES.staff.medical.view.route} element={<PatientRecordView/>}/>
 
                         <Route path={ROUTES.staff.dashboard.dental} element={<DentalPage/>}/>
                         <Route path={ROUTES.staff.dental.createNewRecord} element={<DentalRecordForm/>}/>

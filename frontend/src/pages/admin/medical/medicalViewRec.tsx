@@ -1,109 +1,78 @@
-import React, { useState } from "react";
-import {
-  ArrowLeft,
-  User,
-  ClipboardList,
-  Printer,
-  Pencil,
-  FileText,
-  RefreshCw,
-} from "lucide-react";
+import { useParams } from "react-router-dom";
+import { ArrowLeft, ClipboardList, Printer, User } from "lucide-react";
 
-import { InfoField, getInitials } from "/@/utils/RecordInfo.jsx";
-import { EditRecordModal, statusEditFields } from "/@/components/editModal.jsx";
-import { StatusBadge } from "/@/components/StatusBadge.jsx";
+import { InfoField, getInitials } from "/@/utils/RecordInfo";
+import { StatusBadge, statusConfig } from "/@/components/StatusBadge";
+import LoadingPage from "/@/components/LoadingPage";
+import { useMedicalVisitDetail } from "/@/hooks/MedicalQuery";
+import { formatDate } from "/@/utils/FormatDate";
 
-import { Patient, Visit, visitEditFields } from "/@/types/types";
-
-const examplePatient: Patient = {
-  recordId: "MED-1042",
-  studentId: "20230810-S",
-  name: "Kenji Briones Chua",
-  address: "123 Rizal Street",
-  barangay: "Barangay San Isidro",
-  age: "21",
-  mobileNumber: "0917 234 5678",
-  sex: "Male",
-  birthday: "2004-03-12",
-  civilStatus: "Single",
-  yearSection: "4th Year - Section A",
-  course: "BS Computer Science",
-  status: "cleared",
-};
-
-// One record = one consultation session, so there is a single visit tied
-// to this patient record rather than a dated history of multiple visits.
-const exampleVisit: Visit = {
-  id: "v1",
-  date: "2026-02-14",
-  doctor: "Dr. Maria Santos",
-  complaint: "Mild fever, headache",
-  treatmentType: "Medicine",
-  treatment: "Paracetamol 500mg, rest advised",
-};
-
-interface PatientRecordViewProps {
-  patient?: Patient;
-  visit?: Visit;
-  onBack?: () => void;
-  onSave?: (patient: Patient) => void;
+interface MedicalNotFoundProps {
+  patientId?: string | null;
+  medicalId?: string | null;
 }
 
-export default function PatientRecordView({
-  patient = examplePatient,
-  visit = exampleVisit,
-  onBack,
-  onSave,
-}: PatientRecordViewProps) {
-  const [patientData, setPatientData] = useState<Patient>(patient);
-  const [visitData, setVisitData] = useState<Visit>(visit);
-  const [isStatusOpen, setIsStatusOpen] = useState(false);
-  const [isEditingVisit, setIsEditingVisit] = useState(false);
+export function MedicalNotFound({ patientId, medicalId }: MedicalNotFoundProps) {
+  return (
+    <div className="mx-auto w-full">
+      <div className="rounded-2xl border border-border bg-surface p-8 text-center shadow-sm">
+        <h2 className="font-heading text-lg font-semibold text-primaryDark">
+          {medicalId
+            ? `Medical record No. ${medicalId} not found`
+            : "Medical record not found"}
+        </h2>
 
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else if (typeof window !== "undefined") {
-      window.history.back();
-    }
-  };
+        <p className="mt-2 text-sm text-textMuted">
+          There is no medical visit at No. {medicalId ?? "unknown"} for patient{" "}
+          <span className="font-medium text-textPrimary">
+            {patientId ?? "unknown"}
+          </span>
+          .
+        </p>
 
-  const handleSaveStatus = (updatedPatient: Patient) => {
-    setPatientData(updatedPatient);
-    setIsStatusOpen(false);
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="mt-5 inline-flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-textSecondary hover:bg-surfaceMuted"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to records
+        </button>
+      </div>
+    </div>
+  );
+}
 
-    if (onSave) {
-      onSave(updatedPatient);
-    }
-  };
+export default function PatientRecordView() {
+  const { patientId, medicalId } = useParams<{
+    patientId: string;
+    medicalId: string;
+  }>();
 
-  const handleSaveVisit = (updatedVisit: Visit) => {
-    setVisitData(updatedVisit);
-    setIsEditingVisit(false);
+  if (!patientId || !medicalId) {
+    return <MedicalNotFound patientId={patientId} medicalId={medicalId} />;
+  }
+
+  const {
+    data: visit,
+    isLoading,
+    isError,
+  } = useMedicalVisitDetail(patientId, medicalId);
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
+
+  if (isError || !visit) {
+    return <MedicalNotFound patientId={patientId} medicalId={medicalId} />;
+  }
+
+  const handleBack = (): void => {
+    window.history.back();
   };
 
   return (
     <div className="mx-auto w-full">
-      {isStatusOpen && (
-        <EditRecordModal
-          title="Update status"
-          fields={statusEditFields}
-          data={patientData}
-          onClose={() => setIsStatusOpen(false)}
-          onSave={handleSaveStatus}
-        />
-      )}
-
-      {isEditingVisit && (
-        <EditRecordModal
-          title="Edit visit"
-          fields={visitEditFields}
-          data={visitData}
-          onClose={() => setIsEditingVisit(false)}
-          onSave={handleSaveVisit}
-        />
-      )}
-
       <div className="relative overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
 
@@ -119,17 +88,17 @@ export default function PatientRecordView({
             </button>
 
             <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setIsStatusOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-white border border-border px-3 py-1.5 text-xs font-medium hover:bg-surfaceMuted"
-              >
-                <RefreshCw className="h-3.5 w-3.5" />
-                Update status
-              </button>
+              {visit.status in statusConfig ? (
+                <StatusBadge status={visit.status as keyof typeof statusConfig} />
+              ) : (
+                <span className="rounded-full border border-border bg-surfaceMuted px-2.5 py-1 text-[10px] font-semibold text-textSecondary">
+                  {visit.status}
+                </span>
+              )}
 
               <button
                 type="button"
+                onClick={() => window.print()}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-textSecondary hover:bg-surfaceMuted"
               >
                 <Printer className="h-3.5 w-3.5" />
@@ -141,31 +110,29 @@ export default function PatientRecordView({
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-5">
               <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
-                {getInitials(patientData.name)}
+                {getInitials(visit.patient_name)}
               </span>
 
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="font-heading text-2xl font-semibold text-primaryDark">
-                    {patientData.name}
+                    {visit.patient_name}
                   </h1>
 
                   <span className="rounded-md bg-surfaceMuted px-2 py-0.5 text-xs text-textMuted">
-                    {patientData.recordId}
+                    MED-{visit.id}
                   </span>
                 </div>
 
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-textMuted">
-                  {patientData.studentId && (
-                    <span>{patientData.studentId}</span>
+                  {visit.patient_id && (
+                    <span>{visit.patient_id}</span>
                   )}
                   <span>•</span>
                   <span>Medical Record</span>
                 </div>
               </div>
             </div>
-
-            <StatusBadge status={patientData.status} />
           </div>
         </div>
       </div>
@@ -183,32 +150,16 @@ export default function PatientRecordView({
           </div>
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-            <InfoField label="Course" value={patientData.course} />
-            <InfoField
-              label="Year and Section"
-              value={patientData.yearSection}
-            />
+            <InfoField label="Course" value={visit.course} />
+            <InfoField label="Patient ID" value={visit.patient_id} />
           </div>
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-            <InfoField label="Age" value={patientData.age} />
-            <InfoField label="Sex" value={patientData.sex} />
-          </div>
-
-          <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-            <InfoField label="Civil status" value={patientData.civilStatus} />
-            <InfoField label="Birthday" value={patientData.birthday} />
-          </div>
-
-          <div className="grid grid-cols-1 gap-x-4 gap-y-5">
             <InfoField
-              label="Address"
-              value={`${patientData.address}, ${patientData.barangay}`}
+              label="Visit Date"
+              value={formatDate(visit.visit_date)}
             />
-            <InfoField
-              label="Mobile Number"
-              value={patientData.mobileNumber}
-            />
+            <InfoField label="Attending Staff" value={visit.staff_id} />
           </div>
         </div>
 
@@ -222,41 +173,23 @@ export default function PatientRecordView({
               </h2>
             </div>
 
-            <span className="text-xs text-textMuted">{visitData.date}</span>
+            <span className="text-xs text-textMuted">
+              {formatDate(visit.visit_date)}
+            </span>
           </div>
 
           <div className="rounded-xl border border-border p-5">
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="font-heading text-base font-semibold text-primaryDark">
-                {visitData.complaint}
-              </h3>
-
-              <button
-                type="button"
-                onClick={() => setIsEditingVisit(true)}
-                className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-border px-2.5 text-xs font-medium text-textSecondary hover:bg-surfaceMuted"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-                Edit
-              </button>
+            <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+              <InfoField label="Status" value={visit.status} />
+              <InfoField label="Course" value={visit.course} />
             </div>
 
             <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
-              <InfoField label="Attending doctor" value={visitData.doctor} />
               <InfoField
-                label="Treatment type"
-                value={visitData.treatmentType}
+                label="Visit Date"
+                value={formatDate(visit.visit_date)}
               />
-            </div>
-
-            <div className="mt-4 rounded-lg border border-border bg-surfaceMuted/40 p-4">
-              <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-textMuted">
-                <FileText className="h-3.5 w-3.5" />
-                Treatment notes
-              </div>
-              <p className="text-sm text-textPrimary">
-                {visitData.treatment}
-              </p>
+              <InfoField label="Attending Staff" value={visit.staff_id} />
             </div>
           </div>
         </div>

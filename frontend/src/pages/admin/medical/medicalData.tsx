@@ -7,6 +7,7 @@ import {medicalStatuses} from "/@/types/Medical";
 export const medRecords: medData[] = [
   {
     id: "MED-1042",
+    patient_id: "",
     student: "Kenji Chua",
     course: "BS Computer Science",
     time: "9:00 AM",
@@ -15,6 +16,7 @@ export const medRecords: medData[] = [
   },
   {
     id: "MED-1043",
+    patient_id: "",
     student: "Ivan Mejorada",
     course: "BS Psychology",
     time: "9:30 AM",
@@ -23,6 +25,7 @@ export const medRecords: medData[] = [
   },
   {
     id: "MED-1044",
+    patient_id: "",
     student: "Cjay Gonzales",
     course: "BS Industrial Engineering",
     time: "10:00 AM",
@@ -31,6 +34,7 @@ export const medRecords: medData[] = [
   },
   {
     id: "MED-1045",
+    patient_id: "",
     student: "Joshua Lapitan",
     course: "BS Electronics Engineering",
     time: "10:15 AM",
@@ -39,6 +43,7 @@ export const medRecords: medData[] = [
   },
   {
     id: "MED-1046",
+    patient_id: "",
     student: "Rosh Ingel",
     course: "BS Accountancy",
     time: "10:45 AM",
@@ -135,10 +140,11 @@ export const emptyDetails = {
 
 export interface medData {
   id: string;
+  patient_id: string;
   student: string;
   course: string;
   time: string;
-  type: string;
+  type?: string;
   status: Status
 }
 
