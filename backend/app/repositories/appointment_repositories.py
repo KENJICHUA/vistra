@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from app.schemas.response_dto.reponses import PaginatedResponse
 from app.utils.supabase_query_builder import SupabaseQueryBuilder
 
@@ -41,8 +43,18 @@ class AppointmentRepository:
             .eq("status", filters.status)
             .eq("type", filters.type)
             .eq("course", filters.course)
-            .eq("date", filters.date)
         )
+
+        if filters.date:
+            query = (
+                query
+                .gte("scheduled_start", filters.date)
+                .lt(
+                    "scheduled_start",
+                    filters.date + timedelta(days=1)
+                )
+            )
+
         response = (
             query
             .paginate(

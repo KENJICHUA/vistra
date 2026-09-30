@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 
 import { useTableContext } from "/@/context/TableContext";
-import type { Column } from "/@/components/table/Table";
+import type { Column, ColumnFilterOption } from "/@/components/table/Table";
+import { useDebounce } from "/@/hooks/Debouncer";
 
 interface DateFilterProps {
   value: string | null;
@@ -34,7 +35,7 @@ export function DateFilter({ value, onChange }: DateFilterProps) {
 
 interface FilterDropdownProps {
   label: string;
-  options: string[];
+  options: ColumnFilterOption[];
   value: string | null;
   onChange: (value: string | null) => void;
 }
@@ -47,6 +48,8 @@ export function FilterDropdown({
 }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  const selectedLabel = options.find((option) => option.value === value)?.label;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -88,7 +91,7 @@ export function FilterDropdown({
       >
         <span>{label}</span>
 
-        {value && (
+        {value && selectedLabel && (
           <span
             className="
                             max-w-[110px]
@@ -101,7 +104,7 @@ export function FilterDropdown({
                             text-primary
                         "
           >
-            {value}
+            {selectedLabel}
           </span>
         )}
 
@@ -166,10 +169,10 @@ export function FilterDropdown({
 
           {options.map((option) => (
             <button
-              key={option}
+              key={option.value}
               type="button"
               onClick={() => {
-                onChange(option);
+                onChange(option.value);
                 setOpen(false);
               }}
               className={`
@@ -182,14 +185,14 @@ export function FilterDropdown({
                                 transition-colors
                                 duration-150
                                 ${
-                                  value === option
+                                  value === option.value
                                     ? "font-semibold text-primary"
                                     : "text-textSecondary"
                                 }
                                 hover:bg-primary/5
                             `}
             >
-              {option}
+              {option.label}
             </button>
           ))}
         </div>
@@ -205,6 +208,18 @@ interface TableFiltersProps<T> {
 export function TableFilters<T>({ columns }: TableFiltersProps<T>) {
   const { search, setSearch, filters, setFilter, clearFilters, run } =
     useTableContext<T>();
+
+  const debouncedSearch = useDebounce(search, 500);
+  const isFirstRun = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+
+    run();
+  }, [debouncedSearch, run]);
 
   const filterableColumns = columns.filter((column) => column.filterType);
 
@@ -249,14 +264,15 @@ export function TableFilters<T>({ columns }: TableFiltersProps<T>) {
       </div>
 
       {filterableColumns.map((column) => {
-        const value = filters[column.key] ?? null;
+        const filterKey = (column.filterKey ?? column.key) as keyof T;
+        const value = filters[filterKey] ?? null;
 
         if (column.filterType === "date") {
           return (
             <DateFilter
               key={String(column.key)}
               value={value}
-              onChange={(nextValue) => setFilter(column.key, nextValue)}
+              onChange={(nextValue) => setFilter(filterKey, nextValue)}
             />
           );
         }
@@ -268,17 +284,13 @@ export function TableFilters<T>({ columns }: TableFiltersProps<T>) {
               label={column.label}
               options={column.options ?? []}
               value={value}
-              onChange={(nextValue) => setFilter(column.key, nextValue)}
+              onChange={(nextValue) => setFilter(filterKey, nextValue)}
             />
           );
         }
 
         return null;
       })}
-
-      <button className="inline-flex h-6 items-center gap-1.5 rounded-md bg-primaryDark px-2.5 text-xs font-medium text-white transition hover:bg-primary">
-        <SlidersHorizontal   className="h-3.5 w-3.5" />
-      </button>
 
       {hasFilters && (
         <button

@@ -16,6 +16,7 @@ export interface AppointmentFilters {
     status?: string;
     type?: string;
     course?: string;
+    date?: string;
 
     page?: number;
     page_size?: number;

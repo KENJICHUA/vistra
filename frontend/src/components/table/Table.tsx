@@ -1,83 +1,48 @@
-import React, {ReactNode} from "react";
+import type {ReactNode} from "react";
 
-import { getInitials, avatarColor} from "/@/components/avatar";
-import {Status, StatusBadge} from "/@/components/StatusBadge";
 import LoadingPage from "/@/components/LoadingPage";
 
-export interface Default {
-    id: string;
-    student: string;
-    course: string;
-    time: string;
-    type: string;
-    status: Status;
+export interface ColumnFilterOption {
+    value: string;
+    label: string;
 }
 
-export const defaultColumns: Column<Default>[] = [
-    {
-        key: "student",
-        label: "Student",
-        render: (value) => {
-            const student = value as string;
+export function optionsFromValues(values: string[]): ColumnFilterOption[] {
+    return values.map((value) => ({value, label: value}));
+}
 
-            return (
-                <div className="flex items-center gap-2.5">
-                    <span
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${avatarColor(student)}`}
-                    >
-                        {getInitials(student)}
-                    </span>
-
-                    <span className="text-sm font-medium text-textPrimary">
-                        {student}
-                    </span>
-                </div>
-            );
-        },
-    },
-
-    {
-        key: "course",
-        label: "Course",
-    },
-
-    {
-        key: "time",
-        label: "Time",
-    },
-
-    {
-        key: "type",
-        label: "Type",
-    },
-
-    {
-        key: "status",
-        label: "Status",
-        render: (value) => (
-            <StatusBadge status={value as Status}/>
-        ),
-    },
-
-];
+export function optionsFromMap<T extends Record<string, string>>(
+    map: T
+): ColumnFilterOption[] {
+    return Object.entries(map).map(([value, label]) => ({
+        value,
+        label,
+    }));
+}
 
 export type ColumnType =
-    | "text"
     | "select"
-    | "date"
-    | "dateTime";
+    | "date";
 
-export interface Column<T> {
-    key: keyof T;
+export interface Column<T, K extends keyof T = keyof T> {
+    key: K;
     label: string;
 
     render?: (
-        value: T[keyof T],
+        value: T[K],
         record: T
     ) => ReactNode;
 
     filterType?: ColumnType;
-    options?: string[];
+    options?: ColumnFilterOption[];
+
+    /*
+     * Query param name sent to the backend.
+     * Defaults to the column key. Needed when the row field
+     * differs from the API filter name (e.g. column "time"
+     * filters backend param "date").
+     */
+    filterKey?: string;
 }
 
 interface GenericTableProps {
@@ -85,18 +50,14 @@ interface GenericTableProps {
     className?: string;
 }
 
-export class GenericTable extends React.Component<GenericTableProps> {
-    render() {
-        const {children, className = ""} = this.props;
-
-        return (
-            <table
-                className={`w-full min-w-[640px] border-separate border-spacing-0 ${className}`}
-            >
-                {children}
-            </table>
-        );
-    }
+export function GenericTable({children, className = ""}: GenericTableProps) {
+    return (
+        <table
+            className={`w-full min-w-[640px] border-separate border-spacing-0 ${className}`}
+        >
+            {children}
+        </table>
+    );
 }
 
 export const GenericTableHeader = <T, >({
@@ -112,6 +73,7 @@ export const GenericTableHeader = <T, >({
             {columns.map((column) => (
                 <th
                     key={String(column.key)}
+                    scope="col"
                     className="
                             border-b border-border
                             px-4 py-3
@@ -126,6 +88,7 @@ export const GenericTableHeader = <T, >({
 
             {hasAction && (
                 <th
+                    scope="col"
                     className="
                             border-b border-border
                             px-4 py-3
@@ -194,7 +157,7 @@ export const GenericTableBody = <T extends { id: string }>({
                                     record[column.key],
                                     record
                                 )
-                                : String(record[column.key])}
+                                : formatCellValue(record[column.key])}
                         </td>
                     ))}
 
@@ -220,6 +183,14 @@ export const GenericTableBody = <T extends { id: string }>({
         </tbody>
     );
 };
+
+function formatCellValue(value: unknown): string {
+    if (value === null || value === undefined || value === "") {
+        return "—";
+    }
+
+    return String(value);
+}
 
 function GenericRow({children}: { children: ReactNode }) {
     return (

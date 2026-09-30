@@ -1,8 +1,8 @@
 import {Status, StatusBadge} from "/@/components/StatusBadge";
-import {Column} from "/@/components/table/Table";
+import {Column, optionsFromMap, optionsFromValues} from "/@/components/table/Table";
 import {avatarColor, getInitials, getTypeIcon} from "/@/components/avatar";
 import React from "react";
-import {DentalStatus} from "/@/types/Dental";
+import {DentalStatus, dentalStatuses} from "/@/types/Dental";
 
 
 export const dentalRecords: DentalData[] = [
@@ -89,7 +89,7 @@ export const DentalColumns: Column<DentalData>[] = [
         key: "course",
         label: "Course",
         filterType: "select",
-        options: [
+        options: optionsFromValues([
             "BS Computer Science",
             "BS Business Administration",
             "BS Psychology",
@@ -98,12 +98,13 @@ export const DentalColumns: Column<DentalData>[] = [
             "BS Education",
             "BS Accountancy",
 
-        ],
+        ]),
     },
     {
         key: "time",
         label: "Time",
         filterType: "date",
+        filterKey: "date",
     },
 
 
@@ -112,13 +113,7 @@ export const DentalColumns: Column<DentalData>[] = [
         key: "status",
         label: "Status",
         filterType: "select",
-        options: [
-            "ongoingTreatment",
-            "followUp",
-            "declined",
-            "completed",
-            "referred",
-        ],
+        options: optionsFromMap(dentalStatuses),
         render: (value) => (
             <StatusBadge status={value as Status}/>
         ),

@@ -3,6 +3,7 @@ import React, {
     useCallback,
     useContext,
     useMemo,
+    useRef,
     useState,
 } from "react";
 
@@ -65,6 +66,30 @@ export function TableProvider<T>({
         useState(10);
 
     /*
+     * Latest onRun in a ref so stable callbacks below never
+     * capture a stale closure. Parents pass inline closures,
+     * so onRun identity changes every render.
+     */
+    const onRunRef = useRef(onRun);
+    onRunRef.current = onRun;
+
+    /*
+     * Mirror state in refs so run() always reads current
+     * values even though its identity is stable.
+     */
+    const searchRef = useRef(search);
+    searchRef.current = search;
+
+    const filtersRef = useRef(filters);
+    filtersRef.current = filters;
+
+    const pageRef = useRef(page);
+    pageRef.current = page;
+
+    const pageSizeRef = useRef(pageSize);
+    pageSizeRef.current = pageSize;
+
+    /*
      * Run the query using the supplied pagination values.
      *
      * This is important because React state updates are
@@ -112,19 +137,29 @@ export function TableProvider<T>({
     /*
      * Filter
      *
-     * Changing a filter resets pagination to page 1.
+     * Changing a filter resets pagination to page 1 and
+     * immediately fires the query with the next values
+     * (state updates are async, so run() would see stale state).
      */
     const setFilter = useCallback(
         (
             key: keyof T,
             value: string | null,
         ) => {
-            setFilters((prev) => ({
-                ...prev,
+            const nextFilters = {
+                ...filtersRef.current,
                 [key]: value,
-            }));
+            };
 
+            setFilters(nextFilters);
             setPageState(1);
+
+            onRunRef.current?.(
+                searchRef.current,
+                nextFilters,
+                1,
+                pageSizeRef.current,
+            );
         },
         [],
     );
@@ -137,6 +172,13 @@ export function TableProvider<T>({
         setFilters({});
         setSearchState("");
         setPageState(1);
+
+        onRunRef.current?.(
+            "",
+            {},
+            1,
+            pageSizeRef.current,
+        );
     }, []);
 
     /*
@@ -214,15 +256,17 @@ export function TableProvider<T>({
     /*
      * Manually run the current query.
      *
-     * Used by TableFilters / search.
+     * Stable identity: reads latest state from refs.
+     * Used by TableFilters / debounced search.
      */
     const run = useCallback(() => {
-        execute(page, pageSize);
-    }, [
-        execute,
-        page,
-        pageSize,
-    ]);
+        onRunRef.current?.(
+            searchRef.current,
+            filtersRef.current,
+            pageRef.current,
+            pageSizeRef.current,
+        );
+    }, []);
 
     const contextValue =
         useMemo<TableContextValue<T>>(

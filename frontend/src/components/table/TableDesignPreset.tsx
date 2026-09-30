@@ -94,28 +94,31 @@ function DefaultTableContent<T extends { id: string }>({
 
                 <div className="border-t border-border"/>
 
-                <GenericTable>
-                    <GenericTableHeader
-                        columns={columns}
-                        hasAction
-                    />
+                <div className="overflow-x-auto">
+                    <GenericTable>
+                        <GenericTableHeader
+                            columns={columns}
+                            hasAction={Boolean(renderAction)}
+                        />
 
-                    <GenericTableBody
-                        data={data}
-                        columns={columns}
-                        renderAction={renderAction}
-                        isLoading={isLoading}
-                    />
-                </GenericTable>
-
-                <div className="flex justify-center">
-                    <Pagination
-                        count={totalPages}
-                        page={page}
-                        onChange={(_, newPage) => goToPage(newPage)}
-                        defaultPage={page}
-                    />
+                        <GenericTableBody
+                            data={data}
+                            columns={columns}
+                            renderAction={renderAction}
+                            isLoading={isLoading}
+                        />
+                    </GenericTable>
                 </div>
+
+                {totalPages !== undefined && totalPages > 1 && page !== undefined && (
+                    <div className="flex justify-center">
+                        <Pagination
+                            count={totalPages}
+                            page={page}
+                            onChange={(_, newPage) => goToPage(newPage)}
+                        />
+                    </div>
+                )}
 
             </div>
         </div>

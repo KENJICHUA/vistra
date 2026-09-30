@@ -1,5 +1,5 @@
-import {Status, StatusBadge} from "/@/components/StatusBadge";
-import {Column} from "/@/components/table/Table";
+import {Status, StatusBadge, statusLabels} from "/@/components/StatusBadge";
+import {Column, optionsFromMap, optionsFromValues} from "/@/components/table/Table";
 import {avatarColor, getInitials, getTypeIcon} from "/@/components/avatar";
 import React from "react";
 
@@ -190,7 +190,7 @@ export const AppointmentsColumns: Column<AppointmentTableFormat>[] = [
         key: "course",
         label: "Course",
         filterType: "select",
-        options: [
+        options: optionsFromValues([
             "BS Computer Science",
             "BS Business Administration",
             "BS Psychology",
@@ -199,24 +199,25 @@ export const AppointmentsColumns: Column<AppointmentTableFormat>[] = [
             "BS Education",
             "BS Accountancy",
 
-        ],
+        ]),
     },
     {
         key: "time",
         label: "Time",
-        filterType: "date"
+        filterType: "date",
+        filterKey: "date",
     },
 
     {
         key: "type",
         label: "Type",
         filterType: "select",
-        options: [
+        options: optionsFromValues([
             "Medical Consultation",
             "Dental Consultation",
             "Follow-up",
             "Fit to Work Certificate",
-        ],
+        ]),
         render: (value) => {
             const type = value as string;
         
@@ -233,11 +234,11 @@ export const AppointmentsColumns: Column<AppointmentTableFormat>[] = [
         key: "status",
         label: "Status",
         filterType: "select",
-        options: [
-            "pending",
-            "confirmed",
-            "declined",
-        ],
+        options: optionsFromMap({
+            pending: statusLabels.pending,
+            confirmed: statusLabels.confirmed,
+            declined: statusLabels.declined,
+        }),
         render: (value) => (
             <StatusBadge status={value as Status}/>
         ),

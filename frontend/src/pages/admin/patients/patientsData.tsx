@@ -1,4 +1,4 @@
-import {Column} from "/@/components/table/Table";
+import {Column, optionsFromValues} from "/@/components/table/Table";
 import {avatarColor, getInitials} from "/@/components/avatar";
 import React from "react";
 // sample for view rec
@@ -76,11 +76,11 @@ export const patientColumns: Column<patientData>[] = [
         key: "user_type",
         label: "User Type",
         filterType: "select",
-        options: [
+        options: optionsFromValues([
             "Student",
             "Professor",
             "Staff"
-        ]
+        ])
     },
     {
         key: "course_department",

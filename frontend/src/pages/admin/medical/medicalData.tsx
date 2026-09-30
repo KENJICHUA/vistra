@@ -1,7 +1,8 @@
 import {Status, StatusBadge} from "/@/components/StatusBadge";
-import {Column} from "/@/components/table/Table";
+import {Column, optionsFromMap, optionsFromValues} from "/@/components/table/Table";
 import {avatarColor, getInitials, getTypeIcon} from "/@/components/avatar";
 import React from "react";
+import {medicalStatuses} from "/@/types/Medical";
 
 export const medRecords: medData[] = [
   {
@@ -167,7 +168,7 @@ export const MedicalColumns: Column<medData>[] = [
     key: "course",
     label: "Course",
     filterType: "select",
-    options: [
+    options: optionsFromValues([
       "BS Computer Science",
       "BS Business Administration",
       "BS Psychology",
@@ -176,12 +177,13 @@ export const MedicalColumns: Column<medData>[] = [
       "BS Education",
       "BS Accountancy",
 
-    ],
+    ]),
   },
   {
     key: "time",
     label: "Time",
-    filterType: "date"
+    filterType: "date",
+    filterKey: "date",
   },
 
 
@@ -190,13 +192,7 @@ export const MedicalColumns: Column<medData>[] = [
     key: "status",
     label: "Status",
     filterType: "select",
-    options: [
-      "ongoingTreatment",
-      "followUp",
-      "declined",
-      "completed",
-      "referred",
-    ],
+    options: optionsFromMap(medicalStatuses),
     render: (value) => (
         <StatusBadge status={value as Status}/>
     ),
