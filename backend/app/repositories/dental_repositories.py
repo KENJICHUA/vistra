@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from app.schemas.query import FilterDental
 from app.schemas.response_dto.reponses import PaginatedResponse
 from app.utils.supabase_query_builder import SupabaseQueryBuilder
@@ -75,14 +73,7 @@ class DentalRepositories:
         )
 
         if filters.date:
-            query = (
-                query
-                .gte("visit_date", filters.date)
-                .lt(
-                    "visit_date",
-                    filters.date + timedelta(days=1)
-                )
-            )
+            query = query.date_day("visit_date", filters.date)
 
         if filters.search:
             like = f"%{filters.search}%"

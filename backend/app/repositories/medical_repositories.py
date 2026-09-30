@@ -1,5 +1,3 @@
-from datetime import date, timedelta
-
 from app.schemas.query import FilterMedical
 from app.schemas.response_dto.reponses import PaginatedResponse
 from app.utils.supabase_query_builder import SupabaseQueryBuilder
@@ -26,14 +24,7 @@ class MedicalRepositories:
         )
 
         if filters.date:
-            day = date.fromisoformat(filters.date)
-            query = query.gte(
-                "visit_date",
-                str(day)
-            ).lt(
-                "visit_date",
-                str(day + timedelta(days=1))
-            )
+            query = query.date_day("visit_date", filters.date)
 
         if filters.search:
             like = f"%{filters.search}%"

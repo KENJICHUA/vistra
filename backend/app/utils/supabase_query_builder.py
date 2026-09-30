@@ -1,3 +1,6 @@
+from datetime import date, timedelta
+
+
 class SupabaseQueryBuilder:
 
     def __init__(
@@ -48,6 +51,23 @@ class SupabaseQueryBuilder:
             self.query = self.query.lte(column, value)
 
         return self
+
+    def date_day(self, column: str, value):
+        """
+        Match every timestamp within the calendar day of a
+        YYYY-MM-DD string: column >= day AND column < next day.
+        Skipped when value is empty. Raises ValueError on bad input.
+        """
+        if not value:
+            return self
+
+        day = date.fromisoformat(value)
+
+        return (
+            self
+            .gte(column, str(day))
+            .lt(column, str(day + timedelta(days=1)))
+        )
 
     def ilike(self, column: str, value: str):
         if value:
