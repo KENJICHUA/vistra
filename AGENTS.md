@@ -37,7 +37,7 @@ npm run lint  # eslint . (only .js/.jsx covered)
 ```
 
 ## Env (never commit values)
-Backend `backend/.env`: `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_PRIVILEGE_KEY`, `LOCAL_FRONTEND_URL`, `PROD_FRONTEND_URL`, `IS_PROD=false`
+Backend `backend/.env`: `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_PRIVILEGE_KEY`, `LOCAL_FRONTEND_URL`, `PROD_FRONTEND_URL`, `IS_PROD=false`. Self-hosted testing: `SELFHOSTED_SUPABASE_URL`, `SELFHOSTED_SUPABASE_KEY`, toggle with `USE_SELFHOSTED_SUPABASE=true` (default `false` = cloud). Active backend resolves via `Config.supabase_url()/supabase_key()` (`config/settings.py`), validated per mode.
 Frontend `frontend/.env`: `VITE_LOCAL_API_URL` (`http://127.0.0.1:8000`), `VITE_PROD_API_URL`, `VITE_IS_PROD=false`. Code also reads `VITE_SKIP_AUTH` (currently missing).
 
 ## Backend conventions

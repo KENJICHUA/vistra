@@ -9,10 +9,33 @@ class Config:
     SUPABASE_KEY = os.getenv("SUPABASE_KEY")
     SUPABASE_PRIVILEGE_KEY = os.getenv("SUPABASE_PRIVILEGE_KEY")
 
+    SELFHOSTED_SUPABASE_URL = os.getenv("SELFHOSTED_SUPABASE_URL")
+    SELFHOSTED_SUPABASE_KEY = os.getenv("SELFHOSTED_SUPABASE_KEY")
+
+    USE_SELFHOSTED_SUPABASE = os.getenv("USE_SELFHOSTED_SUPABASE", "false").lower() == "true"
+
     IS_PROD = os.getenv("IS_PROD", "false").lower() == "true"
 
     LOCAL_FRONTEND_URL = os.getenv("LOCAL_FRONTEND_URL")
     PROD_FRONTEND_URL = os.getenv("PROD_FRONTEND_URL")
+
+    @classmethod
+    def supabase_source(cls) -> str:
+        return "selfhosted" if cls.USE_SELFHOSTED_SUPABASE else "cloud"
+
+    @classmethod
+    def supabase_url(cls):
+        if cls.USE_SELFHOSTED_SUPABASE:
+            return cls.SELFHOSTED_SUPABASE_URL
+
+        return cls.SUPABASE_URL
+
+    @classmethod
+    def supabase_key(cls):
+        if cls.USE_SELFHOSTED_SUPABASE:
+            return cls.SELFHOSTED_SUPABASE_KEY
+
+        return cls.SUPABASE_KEY
 
     @classmethod
     def frontend_url(cls) -> str:
@@ -32,10 +55,16 @@ class Config:
 
     @classmethod
     def validate(cls):
-        required = {
-            "SUPABASE_URL": cls.SUPABASE_URL,
-            "SUPABASE_KEY": cls.SUPABASE_KEY
-        }
+        if cls.USE_SELFHOSTED_SUPABASE:
+            required = {
+                "SELFHOSTED_SUPABASE_URL": cls.SELFHOSTED_SUPABASE_URL,
+                "SELFHOSTED_SUPABASE_KEY": cls.SELFHOSTED_SUPABASE_KEY
+            }
+        else:
+            required = {
+                "SUPABASE_URL": cls.SUPABASE_URL,
+                "SUPABASE_KEY": cls.SUPABASE_KEY
+            }
 
         missing = [
             name for name, value in required.items()
