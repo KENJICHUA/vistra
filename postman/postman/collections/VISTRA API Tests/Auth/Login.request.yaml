@@ -1,5 +1,5 @@
 $kind: http-request
-url: "{{base_url}}/staff/auth/login"
+url: "{{base_url}}/staff/auth/login/"
 method: POST
 body:
   type: json
@@ -16,7 +16,7 @@ scripts:
 
       \    pm.response.to.have.status(200);\r
 
-      });\r
+      \    });\r
 
       \r
 
@@ -24,7 +24,7 @@ scripts:
 
       \    pm.response.to.be.json;\r
 
-      });\r
+      \    });\r
 
       \r
 
@@ -38,7 +38,7 @@ scripts:
 
       \    pm.expect(json.access_token).to.be.a(\"string\");\r
 
-      });\r
+      \    });\r
 
       \r
 
@@ -48,6 +48,16 @@ scripts:
 
       \    json.access_token\r
 
-      );"
+      \    );\r
+
+      \r
+
+      pm.environment.set(\r
+
+      \    \"refresh_token\",\r
+
+      \    json.refresh_token\r
+
+      \    );"
     language: text/javascript
 order: 1000

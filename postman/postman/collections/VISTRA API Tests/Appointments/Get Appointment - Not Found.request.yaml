@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{base_url}}/appointments/{{patient_id}}/{{appointment_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Deleted appointment returns 404\", function () {\r
+
+      \    pm.response.to.have.status(404);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Error detail is returned\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json).to.have.property(\"detail\");\r
+
+      \    });"
+    language: text/javascript
+order: 8600

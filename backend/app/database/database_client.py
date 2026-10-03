@@ -29,8 +29,8 @@ def get_supabase_for_user(
 
 supabase_admin: Client | None = None
 
-if Config.SUPABASE_PRIVILEGE_KEY:
+if Config.supabase_privilege_key():
     supabase_admin = create_client(
-        Config.SUPABASE_URL,
-        Config.SUPABASE_PRIVILEGE_KEY
+        Config.supabase_url(),
+        Config.supabase_privilege_key()
     )

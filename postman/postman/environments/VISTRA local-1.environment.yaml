@@ -8,3 +8,13 @@ values:
     value: ''
   - key: refresh_token
     value: ''
+  - key: patient_id
+    value: ''
+  - key: patient_birthday
+    value: ''
+  - key: patient_age
+    value: ''
+  - key: appointment_id
+    value: ''
+  - key: dental_visit_id
+    value: ''

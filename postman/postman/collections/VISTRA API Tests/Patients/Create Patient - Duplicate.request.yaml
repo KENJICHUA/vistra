@@ -1,0 +1,63 @@
+$kind: http-request
+url: "{{base_url}}/patients/"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+body:
+  type: json
+  content: "{\r
+
+    \    \"patient_id\": \"TEST001\",\r
+
+    \    \"password\": \"TestPass123!\",\r
+
+    \    \"created_by\": \"{{user_id}}\",\r
+
+    \    \"name\": \"Test, Patient\",\r
+
+    \    \"address\": \"123 Test Street\",\r
+
+    \    \"age\": 20,\r
+
+    \    \"barangay\": \"Commonwealth\",\r
+
+    \    \"birthday\": \"2006-07-07\",\r
+
+    \    \"mobile_number\": \"09171234567\",\r
+
+    \    \"sex\": \"Male\",\r
+
+    \    \"civil_status\": \"Single\",\r
+
+    \    \"classification\": \"Student\",\r
+
+    \    \"course\": \"BS Computer Science\",\r
+
+    \    \"school_year\": \"3rd Year\",\r
+
+    \    \"section\": \"B\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Duplicate patient returns 409\", function () {\r
+
+      \    pm.response.to.have.status(409);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Conflict detail is returned\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json).to.have.property(\"detail\");\r
+
+      \    });"
+    language: text/javascript
+order: 7300

@@ -1,0 +1,37 @@
+$kind: http-request
+url: "{{base_url}}/appointments/{{appointment_id}}/"
+method: PATCH
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+body:
+  type: json
+  content: "{\r
+
+    \    \"status\": \"confirmed\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Update appointment returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Appointment status is updated\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(true);\r
+
+      \    pm.expect(json.data.status).to.eql(\"confirmed\");\r
+
+      \    });"
+    language: text/javascript
+order: 8400

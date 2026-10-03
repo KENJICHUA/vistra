@@ -50,6 +50,11 @@ def get_patient_by_id(patient_id: str, supabase):
 
 
 def create_patient(request: CreatePatientRequest, supabase):
+    print("=== CREATE PATIENT ===")
+    print("patient_id:", request.patient_id)
+    print("password supplied:", bool(request.password))
+    print("created_by:", request.created_by)
+    print("classification:", request.classification)
     patient_id = remove_ucc_domain(request.patient_id)
 
     patient_repo = PatientRepository(supabase)

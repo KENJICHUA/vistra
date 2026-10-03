@@ -11,6 +11,7 @@ class Config:
 
     SELFHOSTED_SUPABASE_URL = os.getenv("SELFHOSTED_SUPABASE_URL")
     SELFHOSTED_SUPABASE_KEY = os.getenv("SELFHOSTED_SUPABASE_KEY")
+    SELFHOSTED_PRIVILEGE_KEY = os.getenv("SELFHOSTED_PRIVILEGE_KEY")
 
     USE_SELFHOSTED_SUPABASE = os.getenv("USE_SELFHOSTED_SUPABASE", "false").lower() == "true"
 
@@ -36,6 +37,13 @@ class Config:
             return cls.SELFHOSTED_SUPABASE_KEY
 
         return cls.SUPABASE_KEY
+
+    @classmethod
+    def supabase_privilege_key(cls):
+        if cls.USE_SELFHOSTED_SUPABASE:
+            return cls.SELFHOSTED_PRIVILEGE_KEY
+
+        return cls.SUPABASE_PRIVILEGE_KEY
 
     @classmethod
     def frontend_url(cls) -> str:

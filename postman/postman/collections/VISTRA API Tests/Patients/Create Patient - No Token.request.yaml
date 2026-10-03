@@ -1,0 +1,45 @@
+$kind: http-request
+url: "{{base_url}}/patients/"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: ""
+body:
+  type: json
+  content: "{\r
+
+    \    \"patient_id\": \"TEST-{{$timestamp}}\",\r
+
+    \    \"password\": \"TestPass123!\",\r
+
+    \    \"created_by\": \"{{user_id}}\",\r
+
+    \    \"name\": \"Test Patient\",\r
+
+    \    \"address\": \"123 Test Street\",\r
+
+    \    \"age\": 20,\r
+
+    \    \"barangay\": \"Commonwealth\",\r
+
+    \    \"birthday\": \"2006-10-01\",\r
+
+    \    \"mobile_number\": \"09171234567\",\r
+
+    \    \"sex\": \"Male\",\r
+
+    \    \"civil_status\": \"Single\",\r
+
+    \    \"classification\": \"Student\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Unauthenticated request returns 401\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      \    });"
+    language: text/javascript
+order: 7200

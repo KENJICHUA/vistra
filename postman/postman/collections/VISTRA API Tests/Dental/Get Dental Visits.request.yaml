@@ -1,0 +1,30 @@
+$kind: http-request
+url: "{{base_url}}/dental/"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Get dental visits returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Paginated dental visits are returned\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(true);\r
+
+      \    pm.expect(json.data.items).to.be.an(\"array\");\r
+
+      \    });"
+    language: text/javascript
+order: 9200
