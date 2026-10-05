@@ -2,13 +2,13 @@ from enum import Enum
 
 
 class MedicalVisitTypes(str, Enum):
-    MEDICAL_CONSULTATION = "Medical Consultation"
-    FOLLOWUP = "Follow-up"
+    MEDICAL_CONSULTATION = "medicalConsultation"
+    FOLLOWUP = "followUp"
 
 class MedicalVisitStatus(str, Enum):
-    CLEARED = "Cleared"
-    NOT_CLEARED = "Not Cleared"
-    SECOND_OPTION = "Second Option"
-    RECOVERED = "Recovered"
-    REFERRED = "Referred"
-    ONGOING_TREATMENT = "Ongoing Treatment"
+    CLEARED = "cleared"
+    NOT_CLEARED = "notCleared"
+    SECOND_OPTION = "secondOption"
+    RECOVERED = "recovered"
+    REFERRED = "referred"
+    ONGOING_TREATMENT = "ongoingTreatment"

@@ -5,7 +5,23 @@ import { InfoField, getInitials } from "/@/utils/RecordInfo";
 import { StatusBadge } from "/@/components/StatusBadge";
 import LoadingPage from "/@/components/LoadingPage";
 import { useMedicalVisitDetail } from "/@/hooks/MedicalQuery";
-import { formatDate } from "/@/utils/FormatDate";
+import type { MedicalRecordDetailSchema } from "/@/api/schema/MedicalSchema";
+
+/*
+ * Dummy-data toggle: set VITE_USE_DUMMY_MEDICAL=true in
+ * frontend/.env (and restart vite) to render the mock below
+ * instead of calling the backend. Unset/false = live API.
+ */
+const USE_DUMMY_DATA =
+  import.meta.env.VITE_USE_DUMMY_MEDICAL === "true";
+
+const DUMMY_MEDICAL_VISIT: MedicalRecordDetailSchema = {
+  medical_visit_id: "1042",
+  patient_name: "Kenji Chua",
+  status: "Cleared",
+  course: "BS Computer Science",
+  staff_name: "Maria Santos",
+};
 
 interface MedicalNotFoundProps {
   patientId?: string | null;
@@ -49,21 +65,26 @@ export default function PatientRecordView() {
     medicalId: string;
   }>();
 
-  if (!patientId || !medicalId) {
+  const {
+    data: fetchedVisit,
+    isLoading,
+    isError,
+  } = useMedicalVisitDetail(
+    USE_DUMMY_DATA ? undefined : patientId,
+    USE_DUMMY_DATA ? undefined : medicalId
+  );
+
+  const visit = USE_DUMMY_DATA ? DUMMY_MEDICAL_VISIT : fetchedVisit;
+
+  if (!USE_DUMMY_DATA && (!patientId || !medicalId)) {
     return <MedicalNotFound patientId={patientId} medicalId={medicalId} />;
   }
 
-  const {
-    data: visit,
-    isLoading,
-    isError,
-  } = useMedicalVisitDetail(patientId, medicalId);
-
-  if (isLoading) {
+  if (!USE_DUMMY_DATA && isLoading) {
     return <LoadingPage />;
   }
 
-  if (isError || !visit) {
+  if (!visit || (!USE_DUMMY_DATA && isError)) {
     return <MedicalNotFound patientId={patientId} medicalId={medicalId} />;
   }
 
@@ -114,13 +135,13 @@ export default function PatientRecordView() {
                   </h1>
 
                   <span className="rounded-md bg-surfaceMuted px-2 py-0.5 text-xs text-textMuted">
-                    MED-{visit.id}
+                    MED-{visit.medical_visit_id}
                   </span>
                 </div>
 
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-textMuted">
-                  {visit.patient_id && (
-                    <span>{visit.patient_id}</span>
+                  {patientId && (
+                    <span>{patientId}</span>
                   )}
                   <span>•</span>
                   <span>Medical Record</span>
@@ -144,16 +165,13 @@ export default function PatientRecordView() {
           </div>
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-            <InfoField label="Course" value={visit.course} />
-            <InfoField label="Patient ID" value={visit.patient_id} />
+            <InfoField label="Course" value={visit.course ?? undefined} />
+            <InfoField label="Patient ID" value={patientId} />
           </div>
 
           <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-            <InfoField
-              label="Visit Date"
-              value={formatDate(visit.visit_date)}
-            />
-            <InfoField label="Attending Staff" value={visit.staff_id} />
+            <InfoField label="Attending Staff" value={visit.staff_name ?? undefined} />
+            <InfoField label="Status" value={visit.status} />
           </div>
         </div>
 
@@ -166,24 +184,17 @@ export default function PatientRecordView() {
                 Consultation
               </h2>
             </div>
-
-            <span className="text-xs text-textMuted">
-              {formatDate(visit.visit_date)}
-            </span>
           </div>
 
           <div className="rounded-xl border border-border p-5">
             <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
               <InfoField label="Status" value={visit.status} />
-              <InfoField label="Course" value={visit.course} />
+              <InfoField label="Course" value={visit.course ?? undefined} />
             </div>
 
             <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
-              <InfoField
-                label="Visit Date"
-                value={formatDate(visit.visit_date)}
-              />
-              <InfoField label="Attending Staff" value={visit.staff_id} />
+              <InfoField label="Attending Staff" value={visit.staff_name ?? undefined} />
+              <InfoField label="Patient" value={visit.patient_name} />
             </div>
           </div>
         </div>

@@ -56,6 +56,21 @@ class MedicalRepositories:
         )
         return bool(response.data)
 
+    def get_medical_record(self, patient_id: str, medical_visit_id: int):
+        response = (
+            self.supabase
+            .table("medical_record_view")
+            .select("*")
+            .eq("medical_visit_id", str(medical_visit_id))
+            .limit(1)
+            .execute()
+        )
+
+        if not response.data:
+            return None
+
+        return response.data[0]
+
     def create(self, data):
         visit_log = data.visit_log[0] if data.visit_log else None
 

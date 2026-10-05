@@ -7,7 +7,7 @@ import { VisitTimeline } from "/@/components/VisitTimeline";
 import { VisitDetailModal } from "/@/components/VisitDetailModal";
 import { sessionManager } from "/@/utils/SessionManager";
 import { ROUTES } from "/@/config/RoutePaths.js";
-import { Patient, Visit } from "/@/types/types";
+import { Visit } from "/@/types/types";
 import { myMedicalRecords, myVisits, emptyMedicalRecord } from "./medicalData";
 
 const DEBUG = false;

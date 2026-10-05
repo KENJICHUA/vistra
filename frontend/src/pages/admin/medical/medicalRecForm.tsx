@@ -10,8 +10,11 @@ import {useEditableRows} from "/@/utils/useEditableRows";
 import type {PatientProfile} from "/@/api/schema/PatientSchema";
 import type {
     CreateMedicalVisit,
-    MedicalVisitRow,
+    MedicalVisitLog,
 } from "/@/api/schema/MedicalSchema";
+import {useCreateMedicalVisit} from "/@/hooks/MedicalQuery";
+import {sessionManager} from "/@/utils/SessionManager";
+import {getFieldErrors} from "/@/utils/Formatters";
 
 const statusField = statusEditFields.find(
     (field: { key: string }) => field.key === "status"
@@ -37,7 +40,11 @@ const visitLogColumns: VisitLogColumn[] = [
     {key: "treatment", header: "Treatment", type: "textarea", placeholder: "e.g. Paracetamol 500mg, rest advised"},
 ];
 
-const emptyVisitRow = (): MedicalVisitRow => ({
+interface VisitFormRow extends MedicalVisitLog {
+    date: string;
+}
+
+const emptyVisitRow = (): VisitFormRow => ({
     date: "",
     complaint: "",
     treatment: "",
@@ -52,6 +59,7 @@ export default function PatientRecordForm({onSave}: PatientRecordFormProps) {
     const [visitType, setVisitType] = useState<string>("");
     const [status, setStatus] = useState<string>("");
     const {rows: visitRows, addRow, removeRow, updateRow, resetRows} = useEditableRows(emptyVisitRow, 1);
+    const createMedicalVisitMutation = useCreateMedicalVisit();
 
     const details = selectedStudent
         ? {
@@ -84,21 +92,41 @@ export default function PatientRecordForm({onSave}: PatientRecordFormProps) {
     const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
         if (!selectedStudent) return;
+
+        const staffId = sessionManager.getUser()?.user_id ?? "";
+        if (!staffId) {
+            console.error("Failed to create medical visit: no staff session found.");
+            return;
+        }
+
+        const logRows = visitRows.filter(
+            (row) => row.date || row.complaint || row.treatment
+        );
+
         const record: CreateMedicalVisit = {
             patient_id: selectedStudent.patient_id,
-            type: visitType,
+            staff_id: staffId,
             status,
-            visits: visitRows
-                .filter((row) => row.date || row.complaint || row.treatment)
-                .map((row) => ({
-                    date: row.date,
-                    complaint: row.complaint,
-                    treatment: row.treatment,
-                })),
+            type: visitType,
+            visit_date: logRows[0]?.date || new Date().toISOString(),
+            visit_log: logRows.map((row) => ({
+                complaint: row.complaint,
+                treatment: row.treatment,
+            })),
         };
 
         if (onSave) onSave(record);
-        else console.log("Saved record:", record);
+
+        createMedicalVisitMutation.mutate(record, {
+            onSuccess: (data) => {
+                console.log("Medical visit created:", data);
+                handleClear();
+                handleBack();
+            },
+            onError: (error) => {
+                console.error("Failed to create medical visit:", getFieldErrors(error));
+            },
+        });
     };
 
     return (
@@ -199,10 +227,10 @@ export default function PatientRecordForm({onSave}: PatientRecordFormProps) {
                         Clear
                     </button>
 
-                    <button type="submit" disabled={!selectedStudent}
+                    <button type="submit" disabled={!selectedStudent || createMedicalVisitMutation.isPending}
                             className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primaryDark disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary">
                         <Save className="h-4 w-4" strokeWidth={2}/>
-                        Save Record
+                        {createMedicalVisitMutation.isPending ? "Saving..." : "Save Record"}
                     </button>
                 </div>
             </div>
