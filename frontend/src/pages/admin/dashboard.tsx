@@ -1,9 +1,9 @@
 import { Search, Bell, ChevronRight } from "lucide-react";
 import React, { useMemo, useState, type ReactNode } from "react";
 import Sidebar from "./sidebar";
-import AppointmentsTab from "./appointments/appointmentsTab.tsx";
-import OverviewTab from "./overview/Overview.tsx";
-import MedicalTab from "./medical/medicalTab.tsx";
+import AppointmentsTab from "./appointments/appointmentsTab";
+import OverviewTab from "./overview/Overview";
+import MedicalTab from "./medical/medicalTab";
 import { filterByQuery } from "/@/utils/FilterByQuery.js";
 import { AdminAnimStyles, CountUp } from "/@/components/adminanim.jsx";
 
@@ -32,6 +32,20 @@ interface TabProps {
 }
 
 type NavId = "overview" | "medical" | "dental" | "appointments" | "records" | "settings";
+
+type SidebarProps = {
+  activeNavId: NavId;
+  onSelectNav: (id: NavId) => void;
+};
+
+const DashboardSidebar = Sidebar as unknown as React.ComponentType<SidebarProps>;
+
+function AppointmentsTabAdapter(_props: TabProps) {
+  const [, setFilters] = useState<unknown>();
+  const appointmentProps = {} as React.ComponentProps<typeof AppointmentsTab>;
+
+  return <AppointmentsTab setFilters={setFilters as typeof appointmentProps.setFilters} />;
+}
 
 const TABLE_AREA_HEIGHT = "h-[340px]";
 
@@ -215,7 +229,7 @@ function SettingsTab() {
 const TAB_COMPONENTS: Partial<Record<NavId, React.ComponentType<TabProps>>> = {
   overview: OverviewTab,
   medical: MedicalTab,
-  appointments: AppointmentsTab,
+  appointments: AppointmentsTabAdapter,
   records: RecordsTab,
   settings: SettingsTab,
 };
@@ -235,7 +249,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="page-in layout-in flex h-screen w-full overflow-hidden bg-gradient-to-br from-background via-primary/[0.03] to-primary/10 font-sans text-textPrimary selection:bg-primary/20">
       <AdminAnimStyles />
-      <Sidebar activeNavId={activeNavId} onSelectNav={handleSelectNav} />
+      <DashboardSidebar activeNavId={activeNavId} onSelectNav={handleSelectNav} />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="slide-down flex items-center justify-between border-b border-border bg-surface/80 px-8 py-4 backdrop-blur-md">
