@@ -98,6 +98,24 @@ class PatientRepository:
             .single()
             .execute()
         )
+
+    def delete_profile(self, patient_id: str):
+        response = (
+            self.supabase.table("PATIENT_PROFILE")
+            .delete()
+            .eq("patient_id", patient_id)
+            .execute()
+        )
+        return bool(response.data)
+
+    def delete(self, patient_id: str):
+        response = (
+            self.supabase.table("PATIENT")
+            .delete()
+            .eq("patient_id", patient_id)
+            .execute()
+        )
+        return bool(response.data)
 # note to me
 # make a router for get_summary_records
 # use it on patient view profiles tab in ui

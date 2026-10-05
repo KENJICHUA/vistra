@@ -1,0 +1,30 @@
+$kind: http-request
+url: "{{base_url}}/patients/{{patient_id}}/"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Delete patient returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Deletion is confirmed\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(true);\r
+
+      \    pm.expect(json).to.have.property(\"message\");\r
+
+      \    });"
+    language: text/javascript
+order: 9800

@@ -1,3 +1,5 @@
+from fastapi import HTTPException, status
+
 from app.repositories.staff_repositories import StaffRepository
 from app.schemas.staff import StaffData, CreateStaffRequest
 from app.services.auth.user import create_auth_user, delete_auth_user
@@ -70,9 +72,6 @@ def get_staff_by_id(staff_id: str, supabase):
         staff_repo = StaffRepository(supabase)
         response = staff_repo.get_by_id(staff_id)
 
-        print("staff_id:", repr(staff_id))
-        print("response:", response)
-
         if response:
             return {
                 "success": True,
@@ -89,3 +88,48 @@ def get_staff_by_id(staff_id: str, supabase):
             "success": False,
             "message": str(e)
         }
+
+
+def delete_staff(staff_id: str, supabase):
+    try:
+        staff_repo = StaffRepository(supabase)
+        existing = staff_repo.get_by_id(staff_id)
+        print(bool(existing))
+        if not existing:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Staff not found"
+            )
+
+        deleted = staff_repo.delete(staff_id)
+        print(deleted)
+        if not deleted:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Staff not found"
+            )
+
+        delete_response = delete_auth_user(existing[0]["id"])
+
+        if not delete_response["success"]:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=(
+                    "Staff deleted from database but failed "
+                    f"to delete user from auth: {delete_response['message']}"
+                )
+            )
+
+        return {
+            "success": True,
+            "message": "Staff deleted successfully"
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )

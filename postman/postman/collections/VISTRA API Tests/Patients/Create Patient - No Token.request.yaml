@@ -19,11 +19,11 @@ body:
 
     \    \"address\": \"123 Test Street\",\r
 
-    \    \"age\": 20,\r
+    \    \"age\": {{patient_age}},\r
 
     \    \"barangay\": \"Commonwealth\",\r
 
-    \    \"birthday\": \"2006-10-01\",\r
+    \    \"birthday\": \"{{patient_birthday}}\",\r
 
     \    \"mobile_number\": \"09171234567\",\r
 
@@ -35,6 +35,17 @@ body:
 
     }"
 scripts:
+  - type: beforeRequest
+    code: "const birthday = new Date();\r
+
+      \r
+
+      birthday.setFullYear(birthday.getFullYear() - 20);\r
+
+      pm.environment.set(\"patient_birthday\", birthday.toISOString().slice(0, 10));\r
+
+      pm.environment.set(\"patient_age\", \"20\");"
+    language: text/javascript
   - type: afterResponse
     code: "pm.test(\"Unauthenticated request returns 401\", function () {\r
 

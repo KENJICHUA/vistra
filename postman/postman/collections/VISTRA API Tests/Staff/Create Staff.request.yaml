@@ -9,7 +9,7 @@ body:
   type: json
   content: "{\r
 
-    \    \"staff_id\": \"STFT-{{$timestamp}}\",\r
+    \    \"staff_id\": \"{{created_staff_id}}\",\r
 
     \    \"first_name\": \"Test\",\r
 
@@ -29,6 +29,9 @@ body:
 
     }"
 scripts:
+  - type: beforeRequest
+    code: "pm.environment.set(\"created_staff_id\", \"STFT-\" + Date.now());"
+    language: text/javascript
   - type: afterResponse
     code: "pm.test(\"Create staff returns 200\", function () {\r
 

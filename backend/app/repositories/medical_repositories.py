@@ -46,3 +46,12 @@ class MedicalRepositories:
             page=filters.page,
             page_size=filters.page_size,
         )
+
+    def delete_visit(self, medical_visit_id: int):
+        response = (
+            self.supabase.table("MEDICAL_VISIT")
+            .delete()
+            .eq("id", medical_visit_id)
+            .execute()
+        )
+        return bool(response.data)

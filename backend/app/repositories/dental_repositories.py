@@ -111,3 +111,21 @@ class DentalRepositories:
             return None
 
         return response.data[0]
+
+    def delete_odontogram_by_visit(self, dental_visit_id: int):
+        response = (
+            self.supabase.table("ODONTOGRAM")
+            .delete()
+            .eq("dental_record_id", dental_visit_id)
+            .execute()
+        )
+        return response.data or []
+
+    def delete_visit(self, dental_visit_id: int):
+        response = (
+            self.supabase.table("DENTAL_VISIT")
+            .delete()
+            .eq("id", dental_visit_id)
+            .execute()
+        )
+        return bool(response.data)

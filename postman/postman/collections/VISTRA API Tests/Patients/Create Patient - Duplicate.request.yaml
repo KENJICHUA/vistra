@@ -42,9 +42,9 @@ body:
     }"
 scripts:
   - type: afterResponse
-    code: "pm.test(\"Duplicate patient returns 409\", function () {\r
+    code: "pm.test(\"Duplicate patient returns 400\", function () {\r
 
-      \    pm.response.to.have.status(409);\r
+      \    pm.response.to.have.status(400);\r
 
       \    });\r
 

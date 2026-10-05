@@ -7,6 +7,7 @@ from app.services.dental import (
     create_dental_record,
     get_all_dental_visits,
     get_dental_record_by_id,
+    delete_dental_visit,
 )
 from app.schemas.dental import DentalVisitCreateRequest
 from app.schemas.query import FilterDental
@@ -42,3 +43,11 @@ def get_dental_record(
         supabase: Client = Depends(get_supabase_for_user)
 ):
     return get_dental_record_by_id(patient_id, dental_visit_id, supabase)
+
+
+@protected_dental_router.delete("/{dental_visit_id}/")
+def delete(
+        dental_visit_id: int,
+        supabase: Client = Depends(get_supabase_for_user)
+):
+    return delete_dental_visit(dental_visit_id, supabase)

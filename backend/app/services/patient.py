@@ -50,11 +50,6 @@ def get_patient_by_id(patient_id: str, supabase):
 
 
 def create_patient(request: CreatePatientRequest, supabase):
-    print("=== CREATE PATIENT ===")
-    print("patient_id:", request.patient_id)
-    print("password supplied:", bool(request.password))
-    print("created_by:", request.created_by)
-    print("classification:", request.classification)
     patient_id = remove_ucc_domain(request.patient_id)
 
     patient_repo = PatientRepository(supabase)
@@ -148,6 +143,52 @@ def create_patient(request: CreatePatientRequest, supabase):
         "success": True,
         "message": "Patient created successfully",
     }
+
+
+def delete_patient(patient_id: str, supabase):
+    try:
+        patient_repo = PatientRepository(supabase)
+        existing = patient_repo.get_by_id(patient_id)
+
+        if not existing:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+
+        patient_repo.delete_profile(patient_id)
+        deleted = patient_repo.delete(patient_id)
+
+        if not deleted:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Patient not found"
+            )
+
+        delete_response = delete_auth_user(existing[0]["id"])
+
+        if not delete_response["success"]:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=(
+                    "Patient deleted from database but failed "
+                    f"to delete user from auth: {delete_response['message']}"
+                )
+            )
+
+        return {
+            "success": True,
+            "message": "Patient deleted successfully"
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
 
 
 def insert_patient_into_db(patient_data: Patient, supabase):
