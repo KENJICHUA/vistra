@@ -84,7 +84,6 @@ export default function PatientRecordForm({onSave}: PatientRecordFormProps) {
     const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
         if (!selectedStudent) return;
-        console.log(selectedStudent)
         const record: CreateMedicalVisit = {
             patient_id: selectedStudent.patient_id,
             type: visitType,
