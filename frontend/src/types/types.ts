@@ -13,6 +13,14 @@ export type TreatmentType =
   | "Referral"
   | "Other";
 
+export const treatmentTypeOptions: TreatmentType[] = [
+  "Medicine",
+  "Procedure",
+  "Advice",
+  "Referral",
+  "Other",
+];
+
 export interface Visit {
   id: string;
   date: string;

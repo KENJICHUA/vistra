@@ -1,11 +1,7 @@
 import React, {useMemo} from "react";
 import {FileText, Stethoscope, Calendar} from "lucide-react";
 import StatsGrid from "./Stats";
-import {
-    AppointmentTableFormat,
-    APPOINTMENTS,
-    AppointmentsColumns
-} from "/@/pages/admin/appointments/appointmentsData";
+import {AppointmentTableFormat, APPOINTMENTS} from "/@/pages/admin/appointments/appointmentsData";
 import PanelHeader from "/@/components/OverviewHeader.jsx";
 import {
     buildClinicalRecords,
@@ -15,14 +11,11 @@ import {
 import {parseTimeToday} from "/@/utils/FormatDate";
 import {Status, statusLabels} from "/@/components/StatusBadge";
 import {CardList} from "/@/components/CardList";
-import {DefaultTablePreset} from "/@/components/table/TableDesignPreset";
 import {CountUp} from "/@/components/adminanim.jsx";
 
 const PANEL_HEIGHT = "h-[520px]";
 
 const APPOINTMENT_LIMIT = 6;
-
-const COMPACT_TABLE = "[&_td]:py-2.5 [&_td]:text-sm [&_th]:text-xs";
 
 interface ConsultationEntry {
     id: string
@@ -115,6 +108,60 @@ function ConsultationPanel({filteredRecords}: { filteredRecords: ConsultationEnt
     );
 }
 
+function AppointmentCard({entry}: { entry: AppointmentTableFormat }) {
+    return (
+        <>
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <p className="truncate text-sm font-medium text-textPrimary">
+                            {entry.student}
+                        </p>
+                    </div>
+
+                    <p className="mt-0.5 break-words text-xs text-textMuted">
+                        {entry.type}
+                    </p>
+                </div>
+
+                <span className="shrink-0 whitespace-nowrap text-xs font-medium text-textSecondary">
+                    {entry.time}
+                </span>
+            </div>
+
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-primary">
+                <Calendar className="h-3.5 w-3.5" strokeWidth={2}/>
+                {statusLabels[entry.status] ?? entry.status}
+            </div>
+        </>
+    );
+}
+
+function AppointmentsList({entries}: { entries: AppointmentTableFormat[] }) {
+    return (
+        <CardList
+            items={entries}
+            keyExtractor={(entry) => entry.id}
+            renderItem={(entry) => <AppointmentCard entry={entry}/>}
+            emptyState={
+                <div className="flex flex-col items-center gap-2 py-10 text-center">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Calendar className="h-5 w-5" strokeWidth={2}/>
+                    </span>
+
+                    <p className="text-sm font-medium text-textPrimary">
+                        No appointments yet
+                    </p>
+
+                    <p className="text-xs text-textMuted">
+                        Booked and walk-in appointments will show up here.
+                    </p>
+                </div>
+            }
+        />
+    );
+}
+
 function AppointmentsPanel() {
     const recentAppointments = useMemo(
         () => APPOINTMENTS.slice(0, APPOINTMENT_LIMIT),
@@ -122,18 +169,17 @@ function AppointmentsPanel() {
     );
 
     return (
-        <div className={`${PANEL_HEIGHT} ${COMPACT_TABLE}`}>
-            <DefaultTablePreset<AppointmentTableFormat>
-                title="Appointment"
+        <div className={`flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-card ${PANEL_HEIGHT}`}>
+            <PanelHeader
                 icon={Calendar}
-                isLoading={false}
-                data={recentAppointments}
-                columns={AppointmentsColumns}
-                panelAddon={<RecentBadge count={recentAppointments.length}/>}
-                showFilters={false}
-                showPagination={false}
-                fillHeight
+                title="Appointment"
+                subtitle="Upcoming and recent bookings"
+                action={<RecentBadge count={recentAppointments.length}/>}
             />
+
+            <div className="mt-5 min-h-0 flex-1 overflow-y-auto">
+                <AppointmentsList entries={recentAppointments}/>
+            </div>
         </div>
     );
 }

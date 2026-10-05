@@ -18,7 +18,9 @@ export function LiveDot({ className = "bg-primary" }) {
       <span
         className={`live-ping absolute inline-flex h-full w-full rounded-full ${className}`}
       />
-      <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${className}`} />
+      <span
+        className={`relative inline-flex h-2.5 w-2.5 rounded-full ${className}`}
+      />
     </span>
   );
 }
@@ -63,7 +65,7 @@ export function CountUp({ to, duration = 900, delay = 0, suffix = "" }) {
 }
 
 const ecgBeat = (o) =>
-  `H${o + 70} L${o + 80} 30 L${o + 88} 14 L${o + 98} 48 L${o + 108} 6 L${o + 118} 36 L${o + 126} 30 H${o + 140} L${o + 150} 22 L${o + 160} 30 H${o + 200}`;
+  `H${o + 55} L${o + 68} 30 L${o + 74} 25 L${o + 80} 30 L${o + 90} 30 L${o + 98} 36 L${o + 108} 8 L${o + 118} 50 L${o + 128} 30 L${o + 145} 30 L${o + 154} 22 L${o + 164} 30 H${o + 200}`;
 
 const ecgPath = `M0 30 ${[0, 200, 400, 600].map(ecgBeat).join(" ")}`;
 
@@ -71,24 +73,29 @@ export function HeartbeatLine({
   className = "text-heartRate",
   heightClass = "h-8",
   delay = 0,
-  duration = 4,
+  duration = 7,
 }) {
+  const reduced = usePrefersReducedMotion();
   return (
     <div
-      className={`${heightClass} w-full overflow-hidden ${className} [mask-image:linear-gradient(90deg,transparent,black_12%,black_88%,transparent)]`}
+      className={`${heightClass} w-full overflow-hidden ${className} [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]`}
       aria-hidden="true"
     >
       <svg
         viewBox="0 0 800 60"
         preserveAspectRatio="none"
         className="ecg-scroll h-full"
-        style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}
+        style={{
+          animationDuration: `${duration}s`,
+          animationDelay: `${delay}s`,
+          animationPlayState: reduced ? "paused" : "running",
+        }}
       >
         <path
           d={ecgPath}
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
@@ -144,16 +151,17 @@ export function AdminAnimStyles() {
       }
       .row-in { animation: rowIn 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
-      @keyframes ecgScroll {
-        from { transform: translateX(0); }
-        to   { transform: translateX(-50%); }
-      }
+      @keyframes ecgScroll 
+      { from { transform: translateX(0); } 
+       to { transform: translateX(-50%); } } 
+
       .ecg-scroll {
+        display: block;
         width: 200%;
         max-width: none;
-        animation: ecgScroll 4s linear infinite;
+        animation: ecgScroll 10s linear infinite;
+        will-change: transform;
       }
-
       @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
       .page-in { animation: pageIn 0.5s ease-out both; }
 

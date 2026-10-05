@@ -1,9 +1,11 @@
 import {Status, StatusBadge} from "/@/components/StatusBadge";
+
 import {Column} from "/@/components/table/Table";
-import {avatarColor, getInitials, getTypeIcon} from "/@/components/avatar";
-import React from "react";
+
+import {avatarColor, getInitials} from "/@/components/avatar";
 
 export const medRecords: medData[] = [
+
   {
     id: "MED-1042",
     student: "Kenji Chua",
@@ -12,6 +14,7 @@ export const medRecords: medData[] = [
     type: "Medical Consultation",
     status: "cleared",
   },
+
   {
     id: "MED-1043",
     student: "Ivan Mejorada",
@@ -20,6 +23,7 @@ export const medRecords: medData[] = [
     type: "Follow-up",
     status: "secondOpinion",
   },
+
   {
     id: "MED-1044",
     student: "Cjay Gonzales",
@@ -28,6 +32,7 @@ export const medRecords: medData[] = [
     type: "Medical Consultation",
     status: "recovered",
   },
+
   {
     id: "MED-1045",
     student: "Joshua Lapitan",
@@ -36,6 +41,7 @@ export const medRecords: medData[] = [
     type: "Medical Consultation",
     status: "referred",
   },
+
   {
     id: "MED-1046",
     student: "Rosh Ingel",
@@ -44,9 +50,11 @@ export const medRecords: medData[] = [
     type: "Medical Consultation",
     status: "ongoingTreatment",
   },
+
 ];
 
 export const students = [
+
   {
     id: "MED-1042",
     name: "Kenji Chua",
@@ -60,6 +68,7 @@ export const students = [
     birthday: "2005-03-14",
     civilStatus: "Single",
   },
+
   {
     id: "MED-1043",
     name: "Ivan Mejorada",
@@ -73,6 +82,7 @@ export const students = [
     birthday: "2006-07-02",
     civilStatus: "Single",
   },
+
   {
     id: "MED-1044",
     name: "Cjay Gonzales",
@@ -86,6 +96,7 @@ export const students = [
     birthday: "2004-01-29",
     civilStatus: "Single",
   },
+
   {
     id: "MED-1045",
     name: "Joshua Lapitan",
@@ -99,6 +110,7 @@ export const students = [
     birthday: "2005-11-08",
     civilStatus: "Single",
   },
+
   {
     id: "MED-1046",
     name: "Rosh Ingel",
@@ -112,6 +124,7 @@ export const students = [
     birthday: "2007-05-19",
     civilStatus: "Single",
   },
+
 ];
 
 export const type = [
@@ -120,6 +133,7 @@ export const type = [
 ];
 
 export const emptyDetails = {
+
   course: "",
   address: "",
   barangay: "",
@@ -130,39 +144,51 @@ export const emptyDetails = {
   civilStatus: "",
   yearSection: "",
   type: "",
+
 };
 
 export interface medData {
+
   id: string;
   student: string;
   course: string;
   time: string;
   type: string;
-  status: Status
+  status: Status;
+
 }
 
 export const MedicalColumns: Column<medData>[] = [
+
   {
     key: "student",
     label: "Student",
     render: (value) => {
+
       const student = value as string;
 
       return (
-          <div className="flex items-center gap-2.5">
-          <span
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${avatarColor(student)}`}
-          >
-      {getInitials(student)}
-      </span>
 
-            <span className="text-sm font-medium text-textPrimary">
-          {student}
+        <div className="flex items-center gap-2.5">
+
+          <span
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${avatarColor(student)}`}
+          >
+            {getInitials(student)}
           </span>
-          </div>
+
+          <span className="text-sm font-medium text-textPrimary">
+            {student}
+          </span>
+
+        </div>
+
       );
+
     },
+
   },
+
   {
     key: "course",
     label: "Course",
@@ -175,16 +201,21 @@ export const MedicalColumns: Column<medData>[] = [
       "BS Information Technology",
       "BS Education",
       "BS Accountancy",
-
     ],
   },
+
+  {
+    key: "type",
+    label: "Type",
+    filterType: "select",
+    options: type,
+  },
+
   {
     key: "time",
     label: "Time",
-    filterType: "date"
+    filterType: "date",
   },
-
-
 
   {
     key: "status",
@@ -198,8 +229,8 @@ export const MedicalColumns: Column<medData>[] = [
       "referred",
     ],
     render: (value) => (
-        <StatusBadge status={value as Status}/>
+      <StatusBadge status={value as Status} />
     ),
-
   },
-]
+
+];
