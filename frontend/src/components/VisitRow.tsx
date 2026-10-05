@@ -56,7 +56,7 @@ export function VisitRow({ visit, isLast, onView, onEdit }: VisitRowProps) {
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-textMuted">
                   Treatment
-                  {visit.treatmentType ? ` · ${visit.treatmentType}` : ""}
+                  {visit?.treatmentType ? ` · ${visit?.treatmentType}` : ""}
                 </p>
                 <p className="mt-0.5 line-clamp-1 text-sm text-textSecondary">
                   {visit.treatment}

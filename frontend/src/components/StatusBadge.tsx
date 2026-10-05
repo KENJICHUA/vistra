@@ -65,12 +65,80 @@ export const statusLabels = {
 
 export type Status = keyof typeof statusConfig;
 
+/*
+ * Values that arrive from the database but match no key or
+ * label in statusConfig (e.g. DENTAL_VISIT defaults to
+ * 'ComingSoon', medical uses 'Not Cleared' / 'Second Option').
+ */
+const DB_STATUS_ALIASES: Record<string, Status> = {
+  "comingsoon": "pending",
+  "coming soon": "pending",
+  "not cleared": "declined",
+  "second option": "secondOpinion",
+};
+
+/*
+ * Adapter: normalize any backend status string (key, display
+ * label, or known DB variant) to a Status key. Returns null
+ * when nothing matches so callers can fall back gracefully
+ * instead of crashing on statusConfig[status].
+ */
+export function resolveStatus(value: unknown): Status | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const raw = value.trim();
+
+  if (!raw) {
+    return null;
+  }
+
+  if (raw in statusConfig) {
+    return raw as Status;
+  }
+
+  const lowered = raw.toLowerCase();
+
+  for (const [key, config] of Object.entries(statusConfig)) {
+    if (config.label.toLowerCase() === lowered) {
+      return key as Status;
+    }
+  }
+
+  return DB_STATUS_ALIASES[lowered] ?? null;
+}
+
 interface StatusBadgeProps {
-  status: Status;
+  status: string;
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  const { label, className } = statusConfig[status];
+  const resolved = resolveStatus(status);
+
+  if (!resolved) {
+    return (
+        <span
+            className={`
+                inline-flex
+                items-center
+                rounded-full
+                border
+                border-border
+                bg-surfaceMuted
+                px-2.5
+                py-1
+                text-xs
+                font-medium
+                text-textSecondary
+            `}
+      >
+            {status || "—"}
+        </span>
+    );
+  }
+
+  const { label, className } = statusConfig[resolved];
 
   return (
       <span

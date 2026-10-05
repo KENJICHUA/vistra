@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { ArrowLeft, ClipboardList, Printer, User } from "lucide-react";
 
 import { InfoField, getInitials } from "/@/utils/RecordInfo";
-import { StatusBadge, statusConfig } from "/@/components/StatusBadge";
+import { StatusBadge } from "/@/components/StatusBadge";
 import LoadingPage from "/@/components/LoadingPage";
 import { useMedicalVisitDetail } from "/@/hooks/MedicalQuery";
 import { formatDate } from "/@/utils/FormatDate";
@@ -88,13 +88,7 @@ export default function PatientRecordView() {
             </button>
 
             <div className="flex gap-2">
-              {visit.status in statusConfig ? (
-                <StatusBadge status={visit.status as keyof typeof statusConfig} />
-              ) : (
-                <span className="rounded-full border border-border bg-surfaceMuted px-2.5 py-1 text-[10px] font-semibold text-textSecondary">
-                  {visit.status}
-                </span>
-              )}
+              <StatusBadge status={visit.status} />
 
               <button
                 type="button"

@@ -8,7 +8,7 @@ import {
   lowerTeeth,
 } from "/@/components/teethDesign.jsx";
 import LoadingPage from "/@/components/LoadingPage";
-import { StatusBadge, statusConfig } from "/@/components/StatusBadge";
+import { StatusBadge } from "/@/components/StatusBadge";
 import { useDentalVisitDetail } from "/@/hooks/DentalQuery";
 import { formatDate } from "/@/utils/FormatDate";
 
@@ -112,13 +112,7 @@ export default function DentalRecordView() {
             </button>
 
             <div className="flex items-center gap-2">
-              {record.status in statusConfig ? (
-                <StatusBadge status={record.status as keyof typeof statusConfig} />
-              ) : (
-                <span className="rounded-full border border-border bg-surfaceMuted px-2.5 py-1 text-[10px] font-semibold text-textSecondary">
-                  {record.status}
-                </span>
-              )}
+              <StatusBadge status={record.status} />
 
               <button
                 type="button"
