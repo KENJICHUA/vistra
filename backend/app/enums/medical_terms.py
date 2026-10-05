@@ -1,11 +1,11 @@
 from enum import Enum
 
 
-class MedicalVisitTypes(strm, Enum):
+class MedicalVisitTypes(str, Enum):
     MEDICAL_CONSULTATION = "Medical Consultation"
     FOLLOWUP = "Follow-up"
 
-class MedicalVisitStatus(strm, Enum):
+class MedicalVisitStatus(str, Enum):
     CLEARED = "Cleared"
     NOT_CLEARED = "Not Cleared"
     SECOND_OPTION = "Second Option"

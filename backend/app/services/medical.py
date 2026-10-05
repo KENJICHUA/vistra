@@ -1,6 +1,28 @@
 from fastapi import HTTPException, status
 
 from app.repositories.medical_repositories import MedicalRepositories
+from app.schemas.medical import MedicalVisitCreateRequest
+
+
+def create_medical_record(request: MedicalVisitCreateRequest, supabase):
+    try:
+        medical_repository = MedicalRepositories(supabase)
+
+        medical_visit_id = medical_repository.create(request)
+
+        if not medical_visit_id:
+            raise Exception("Failed to create medical record")
+
+        return {
+            "success": True,
+            "medical_visit_id": medical_visit_id
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
 
 
 def get_all_medical_visits(filters, supabase):

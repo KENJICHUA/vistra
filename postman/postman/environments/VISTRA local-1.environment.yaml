@@ -20,3 +20,5 @@ values:
     value: ''
   - key: created_staff_id
     value: ''
+  - key: medical_visit_id
+    value: ''

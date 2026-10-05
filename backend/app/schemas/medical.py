@@ -9,7 +9,7 @@ class MedicalVisitLog(BaseModel):
     complaint: str
     treatment: str
 
-class MedicalVisitCreateRequest(BaseModel):# this schema is from MEDICAL_VISIT in db
+class MedicalVisitCreateRequest(BaseModel):
     patient_id: str
     staff_id: str
     status: MedicalVisitStatus
@@ -17,7 +17,7 @@ class MedicalVisitCreateRequest(BaseModel):# this schema is from MEDICAL_VISIT i
     visit_date: datetime
     visit_log: list[MedicalVisitLog]
 
-class MedicalVisitTab(BaseModel): # this schema is from medical_tab in db
+class MedicalVisitTab(BaseModel):
     id: str
     patient_id: str
     patient_name: str
