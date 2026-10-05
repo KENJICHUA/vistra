@@ -9,7 +9,7 @@ body:
   type: json
   content: "{\r
 
-    \    \"patient_id\": \"{{patient_id}}\",\r
+    \    \"patient_id\": \"20230847-S\",\r
 
     \    \"scheduled_start\": \"2026-12-01T09:00:00\",\r
 
