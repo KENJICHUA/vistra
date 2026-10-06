@@ -7,7 +7,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start backend
+        working-directory: backend
+        run: |
+          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:8000/health; then
+              echo "Backend is ready"
+              break
+            fi
+
+            echo "Waiting for backend..."
+            sleep 2
+          done
 
       - name: Install Postman CLI
         run: |
@@ -19,4 +48,11 @@ jobs:
 
       - name: Run API tests
         run: |
-          postman collection run "50029254-ad5ecc2b-5f62-4ab4-9b0a-5bfcce774647"
+          postman collection run \
+            "50029254-ad5ecc2b-5f62-4ab4-9b0a-5bfcce774647" \
+            --env-var "base_url=http://localhost:8000"
+
+      - name: Cleanup test data
+        if: always()
+        run: |
+          # Your cleanup flow here
