@@ -156,17 +156,21 @@ export const MedicalColumns: Column<medData>[] = [
       const student = value as string;
 
       return (
-          <div className="flex items-center gap-2.5">
-          <span
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${avatarColor(student)}`}
-          >
-      {getInitials(student)}
-      </span>
 
-            <span className="text-sm font-medium text-textPrimary">
-          {student}
+        <div className="flex items-center gap-2.5">
+
+          <span
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${avatarColor(student)}`}
+          >
+            {getInitials(student)}
           </span>
-          </div>
+
+          <span className="text-sm font-medium text-textPrimary">
+            {student}
+          </span>
+
+        </div>
+
       );
     },
   },
@@ -185,6 +189,14 @@ export const MedicalColumns: Column<medData>[] = [
 
     ]),
   },
+
+  {
+    key: "type",
+    label: "Type",
+    filterType: "select",
+    options: type,
+  },
+
   {
     key: "time",
     label: "Time",
