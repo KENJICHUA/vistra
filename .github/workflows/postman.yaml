@@ -26,6 +26,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_PRIVILEGE_KEY: ${{ secrets.SUPABASE_PRIVILEGE_KEY }}
           LOCAL_FRONTEND_URL: ${{ secrets.LOCAL_FRONTEND_URL }}
         run: |
           uvicorn app.main:app --host 127.0.0.1 --port 8000 > backend.log 2>&1 &

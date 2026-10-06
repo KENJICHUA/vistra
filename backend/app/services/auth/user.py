@@ -8,6 +8,12 @@ def create_auth_user(
 ):
     auth_email = add_ucc_domain(user_id)
 
+    if supabase_admin is None:
+        return {
+            "success": False,
+            "message": "Auth admin is not configured (missing SUPABASE_PRIVILEGE_KEY)"
+        }
+
     try:
         auth_response = supabase_admin.auth.admin.create_user({
             "email": auth_email,
@@ -30,6 +36,12 @@ def create_auth_user(
         }
 
 def delete_auth_user(user_id: str):
+    if supabase_admin is None:
+        return {
+            "success": False,
+            "message": "Auth admin is not configured (missing SUPABASE_PRIVILEGE_KEY)"
+        }
+
     try:
         response = supabase_admin.auth.admin.delete_user(user_id)
 
