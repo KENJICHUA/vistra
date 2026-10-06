@@ -11,17 +11,7 @@ class DentalRepositories:
         response = (
             self.supabase
             .table("DENTAL_VISIT")
-            .insert({
-                "patient_id": data.patient_id,
-                "last_dental_visit": data.last_dental_visit,
-                "brushing_frequency": data.brushing_frequency,
-                "floss": data.floss,
-                "calculus_severity": data.calculus_severity,
-                "current_medications": data.current_medications,
-                "notes": data.notes,
-                "status": data.status,
-                "staff_id": staff_id,
-            })
+            .insert(data.to_db_dict(staff_id))
             .execute()
         )
 
@@ -37,14 +27,7 @@ class DentalRepositories:
             dental_record_id: int
     ):
         teeth = [
-            {
-                "patient_id": patient_id,
-                "tooth_number": item.tooth_number,
-                "is_permanent": item.dentition == "permanent",
-                "condition": item.condition,
-                "notes": item.notes,
-                "dental_record_id": dental_record_id,
-            }
+            item.to_db_dict(patient_id, dental_record_id)
             for item in data
         ]
         response = (

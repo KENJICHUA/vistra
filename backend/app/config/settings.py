@@ -25,25 +25,23 @@ class Config:
         return "selfhosted" if cls.USE_SELFHOSTED_SUPABASE else "cloud"
 
     @classmethod
-    def supabase_url(cls):
+    def _pick(cls, cloud_value, selfhosted_value):
         if cls.USE_SELFHOSTED_SUPABASE:
-            return cls.SELFHOSTED_SUPABASE_URL
+            return selfhosted_value
 
-        return cls.SUPABASE_URL
+        return cloud_value
+
+    @classmethod
+    def supabase_url(cls):
+        return cls._pick(cls.SUPABASE_URL, cls.SELFHOSTED_SUPABASE_URL)
 
     @classmethod
     def supabase_key(cls):
-        if cls.USE_SELFHOSTED_SUPABASE:
-            return cls.SELFHOSTED_SUPABASE_KEY
-
-        return cls.SUPABASE_KEY
+        return cls._pick(cls.SUPABASE_KEY, cls.SELFHOSTED_SUPABASE_KEY)
 
     @classmethod
     def supabase_privilege_key(cls):
-        if cls.USE_SELFHOSTED_SUPABASE:
-            return cls.SELFHOSTED_PRIVILEGE_KEY
-
-        return cls.SUPABASE_PRIVILEGE_KEY
+        return cls._pick(cls.SUPABASE_PRIVILEGE_KEY, cls.SELFHOSTED_PRIVILEGE_KEY)
 
     @classmethod
     def frontend_url(cls) -> str:

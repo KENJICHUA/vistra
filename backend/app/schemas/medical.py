@@ -17,6 +17,23 @@ class MedicalVisitCreateRequest(BaseModel):
     visit_date: datetime
     visit_log: list[MedicalVisitLog]
 
+    def to_db_dict(self) -> dict:
+        first_log = self.visit_log[0] if self.visit_log else None
+        visit_date_iso = self.visit_date.isoformat()
+
+        return {
+            "patient_id": self.patient_id,
+            "staff_id": self.staff_id,
+            "type": self.type.value,
+            "visit_date": visit_date_iso,
+            "visit_log": {
+                "date": visit_date_iso,
+                "complaint": first_log.complaint if first_log else "",
+                "treatment": first_log.treatment if first_log else "",
+            },
+            "status": self.status.value,
+        }
+
 class MedicalVisitTab(BaseModel):
     id: str
     patient_id: str
