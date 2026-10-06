@@ -35,17 +35,37 @@ scripts:
   - type: afterResponse
     code: "```javascript\r
 
-      pm.test(\"Create staff returns 200\", function () {\r
+      console.log(\"========================================\");\r
 
-      \    console.log(\"=== CREATE STAFF RESPONSE ===\");\r
+      console.log(\"CREATE STAFF DEBUG\");\r
 
-      \    console.log(\"Status:\", pm.response.code);\r
-
-      \    console.log(\"Status text:\", pm.response.status);\r
-
-      \    console.log(\"Response body:\", pm.response.text());\r
+      console.log(\"========================================\");\r
 
       \r
+
+      console.log(\"Status code:\", pm.response.code);\r
+
+      console.log(\"Status:\", pm.response.status);\r
+
+      console.log(\"Response time:\", pm.response.responseTime);\r
+
+      console.log(\"Response body:\");\r
+
+      console.log(pm.response.text());\r
+
+      \r
+
+      console.log(\"========================================\");\r
+
+      console.log(\"END CREATE STAFF DEBUG\");\r
+
+      console.log(\"========================================\");\r
+
+      \r
+
+      \r
+
+      pm.test(\"Create staff returns 200\", function () {\r
 
       \    pm.response.to.have.status(200);\r
 
@@ -53,21 +73,51 @@ scripts:
 
       \r
 
+      \r
+
       pm.test(\"Staff creation succeeds\", function () {\r
 
-      \    const json = pm.response.json();\r
+      \    const body = pm.response.text();\r
 
       \r
 
-      \    console.log(\"=== CREATE STAFF JSON ===\");\r
+      \    console.log(\"Raw body inside test:\");\r
+
+      \    console.log(body);\r
+
+      \r
+
+      \    let json;\r
+
+      \r
+
+      \    try {\r
+
+      \        json = JSON.parse(body);\r
+
+      \    } catch (error) {\r
+
+      \        console.log(\"JSON parsing failed:\");\r
+
+      \        console.log(error);\r
+
+      \r
+
+      \        throw error;\r
+
+      \    }\r
+
+      \r
+
+      \    console.log(\"Parsed JSON:\");\r
 
       \    console.log(JSON.stringify(json, null, 2));\r
 
-      \    console.log(\"success:\", json.success);\r
+      \r
 
-      \    console.log(\"message:\", json.message);\r
+      \    console.log(\"success value:\", json.success);\r
 
-      \    console.log(\"data:\", JSON.stringify(json.data, null, 2));\r
+      \    console.log(\"message value:\", json.message);\r
 
       \r
 
@@ -77,13 +127,21 @@ scripts:
 
       \r
 
+      \r
+
       pm.test(\"Success message is returned\", function () {\r
 
-      \    const json = pm.response.json();\r
+      \    const body = pm.response.text();\r
 
       \r
 
-      \    console.log(\"Success message:\", json.message);\r
+      \    console.log(\"Checking message from:\");\r
+
+      \    console.log(body);\r
+
+      \r
+
+      \    const json = JSON.parse(body);\r
 
       \r
 
