@@ -52,7 +52,3 @@ jobs:
             "50029254-ad5ecc2b-5f62-4ab4-9b0a-5bfcce774647" \
             --env-var "base_url=http://localhost:8000"
 
-      - name: Cleanup test data
-        if: always()
-        run: |
-          # Your cleanup flow here
