@@ -30,12 +30,12 @@ jobs:
 
 
         run: |
-          uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 > backend.log 2>&1 &
 
       - name: Wait for backend
         run: |
           for i in {1..30}; do
-            if curl -f http://localhost:8000/health; then
+            if curl -f http://localhost:8000/api/health; then
               echo "Backend is ready"
               break
             fi
