@@ -26,9 +26,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-          LOCAL_FRONTEND_URL: ${{secrets.LOCAL_FRONTEND_URL}}
-
-
+          LOCAL_FRONTEND_URL: ${{ secrets.LOCAL_FRONTEND_URL }}
         run: |
           uvicorn app.main:app --host 127.0.0.1 --port 8000 > backend.log 2>&1 &
 
@@ -37,12 +35,16 @@ jobs:
           for i in {1..30}; do
             if curl -f http://localhost:8000/api/health; then
               echo "Backend is ready"
-              break
+              exit 0
             fi
 
             echo "Waiting for backend..."
             sleep 2
           done
+
+          echo "Backend failed to start"
+          cat backend/backend.log
+          exit 1
 
       - name: Install Postman CLI
         run: |
@@ -51,25 +53,27 @@ jobs:
       - name: Login to Postman CLI
         run: |
           postman login --with-api-key "${{ secrets.POSTMAN_API_KEY }}"
+
       - name: Show API routes
         run: |
           curl -s http://localhost:8000/openapi.json > openapi.json
-      
+
           python - <<'PY'
           import json
-      
+
           with open("openapi.json") as f:
               data = json.load(f)
-      
+
           print("=== VISTRA API ROUTES ===")
-      
+
           for path, methods in data["paths"].items():
               for method in methods:
                   print(f"{method.upper():6} {path}")
           PY
+
       - name: Run API tests
         run: |
           postman collection run \
             "50029254-ad5ecc2b-5f62-4ab4-9b0a-5bfcce774647" \
+            -e "50029254-3315d264-c581-4815-a558-3b5e5f4dc7ca" \
             --env-var "base_url=http://localhost:8000"
-
