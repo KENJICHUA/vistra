@@ -4,6 +4,7 @@ from app.repositories.staff_repositories import StaffRepository
 from app.schemas.staff import StaffData, CreateStaffRequest
 from app.services.auth.user import create_auth_user, delete_auth_user
 from app.utils.email_utils import remove_ucc_domain
+from app.utils.service_helpers import handle_service_errors, or_404
 
 
 def create_staff(request: CreateStaffRequest, supabase):
@@ -90,46 +91,27 @@ def get_staff_by_id(staff_id: str, supabase):
         }
 
 
+@handle_service_errors
 def delete_staff(staff_id: str, supabase):
-    try:
-        staff_repo = StaffRepository(supabase)
-        existing = staff_repo.get_by_id(staff_id)
-        print(bool(existing))
-        if not existing:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Staff not found"
-            )
+    staff_repo = StaffRepository(supabase)
+    existing = staff_repo.get_by_id(staff_id)
+    or_404(existing, "Staff not found")
 
-        deleted = staff_repo.delete(staff_id)
-        print(deleted)
-        if not deleted:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Staff not found"
-            )
+    deleted = staff_repo.delete(staff_id)
+    or_404(deleted, "Staff not found")
 
-        delete_response = delete_auth_user(existing[0]["id"])
+    delete_response = delete_auth_user(existing[0]["id"])
 
-        if not delete_response["success"]:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=(
-                    "Staff deleted from database but failed "
-                    f"to delete user from auth: {delete_response['message']}"
-                )
-            )
-
-        return {
-            "success": True,
-            "message": "Staff deleted successfully"
-        }
-
-    except HTTPException:
-        raise
-
-    except Exception as e:
+    if not delete_response["success"]:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
+            detail=(
+                "Staff deleted from database but failed "
+                f"to delete user from auth: {delete_response['message']}"
+            )
         )
+
+    return {
+        "success": True,
+        "message": "Staff deleted successfully"
+    }

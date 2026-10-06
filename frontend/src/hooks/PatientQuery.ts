@@ -17,18 +17,7 @@ export function usePatientQuery(filters?: PatientFilters) {
     return useQuery({
         queryKey: ["patients", filters],
 
-        queryFn: async ({signal}) => {
-            const {data} = await getAllPatientProfiles(
-                filters,
-                signal
-            );
-
-            if (!data.data) {
-                throw new Error("Patient data is missing");
-            }
-
-            return data.data;
-        },
+        queryFn: async ({signal}) => fetchPatientProfiles(filters, signal),
         refetchOnWindowFocus: false,
     });
 }
@@ -39,21 +28,23 @@ export function usePatientDebouncedQuery(filters?: PatientFilters) {
     return useQuery({
         queryKey: ["patients", debouncedFilters],
 
-        queryFn: async ({ signal }) => {
-            const { data } = await getAllPatientProfiles(
-                debouncedFilters,
-                signal
-            );
-
-            if (!data.data) {
-                throw new Error("Patient data is missing");
-            }
-
-            return data.data;
-        },
+        queryFn: async ({ signal }) => fetchPatientProfiles(debouncedFilters, signal),
 
         refetchOnWindowFocus: false,
     });
+}
+
+async function fetchPatientProfiles(filters?: PatientFilters, signal?: AbortSignal) {
+    const {data} = await getAllPatientProfiles(
+        filters,
+        signal
+    );
+
+    if (!data.data) {
+        throw new Error("Patient data is missing");
+    }
+
+    return data.data;
 }
 
 export function usePatientRecordSummaryQuery(patientId: string) {

@@ -1,7 +1,6 @@
-from fastapi import HTTPException, status
-
 from app.repositories.medical_repositories import MedicalRepositories
 from app.schemas.medical import MedicalVisitCreateRequest
+from app.utils.service_helpers import handle_service_errors, or_404
 
 
 def create_medical_record(request: MedicalVisitCreateRequest, supabase):
@@ -41,53 +40,24 @@ def get_all_medical_visits(filters, supabase):
         }
 
 
+@handle_service_errors
 def get_medical_record_by_id(patient_id: str, medical_visit_id: int, supabase):
-    try:
-        medical_repository = MedicalRepositories(supabase)
-        response = medical_repository.get_medical_record(patient_id, medical_visit_id)
+    medical_repository = MedicalRepositories(supabase)
+    response = medical_repository.get_medical_record(patient_id, medical_visit_id)
 
-        if response:
-            return {
-                "success": True,
-                "data": response
-            }
-
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Medical record not found"
-        )
-
-    except HTTPException:
-        raise
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )
+    return {
+        "success": True,
+        "data": or_404(response, "Medical record not found"),
+    }
 
 
+@handle_service_errors
 def delete_medical_visit(medical_visit_id: int, supabase):
-    try:
-        medical_repository = MedicalRepositories(supabase)
-        deleted = medical_repository.delete_visit(medical_visit_id)
+    medical_repository = MedicalRepositories(supabase)
+    deleted = medical_repository.delete_visit(medical_visit_id)
 
-        if not deleted:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Medical record not found"
-            )
-
+    if or_404(deleted, "Medical record not found"):
         return {
             "success": True,
             "message": "Medical record deleted successfully"
         }
-
-    except HTTPException:
-        raise
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e)
-        )

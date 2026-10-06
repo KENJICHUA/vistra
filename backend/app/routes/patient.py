@@ -20,10 +20,6 @@ def get_patients(supabase: Client = Depends(get_supabase_for_user)):
 
 @protected_patients_router.post("/")
 def create(request: CreatePatientRequest, supabase: Client = Depends(get_supabase_for_user)):
-    print("CreatePatientRequest:", CreatePatientRequest)
-    print("CreatePatientRequest type:", type(CreatePatientRequest))
-    print("ROUTE request:", request)
-    print("ROUTE request type:", type(request))
     return create_patient(request, supabase)
 
 @protected_patients_router.get("/profiles/")

@@ -16,41 +16,29 @@ class SupabaseQueryBuilder:
             .select(columns, count=count)
         )
 
-    def eq(self, column: str, value):
+    def _apply(self, op: str, column: str, value):
         if value is not None:
-            self.query = self.query.eq(column, value)
+            self.query = getattr(self.query, op)(column, value)
 
         return self
+
+    def eq(self, column: str, value):
+        return self._apply("eq", column, value)
 
     def neq(self, column: str, value):
-        if value is not None:
-            self.query = self.query.neq(column, value)
-
-        return self
+        return self._apply("neq", column, value)
 
     def gt(self, column: str, value):
-        if value is not None:
-            self.query = self.query.gt(column, value)
-
-        return self
+        return self._apply("gt", column, value)
 
     def gte(self, column: str, value):
-        if value is not None:
-            self.query = self.query.gte(column, value)
-
-        return self
+        return self._apply("gte", column, value)
 
     def lt(self, column: str, value):
-        if value is not None:
-            self.query = self.query.lt(column, value)
-
-        return self
+        return self._apply("lt", column, value)
 
     def lte(self, column: str, value):
-        if value is not None:
-            self.query = self.query.lte(column, value)
-
-        return self
+        return self._apply("lte", column, value)
 
     def date_day(self, column: str, value):
         """

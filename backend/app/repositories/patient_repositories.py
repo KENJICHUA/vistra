@@ -116,6 +116,3 @@ class PatientRepository:
             .execute()
         )
         return bool(response.data)
-# note to me
-# make a router for get_summary_records
-# use it on patient view profiles tab in ui

@@ -28,9 +28,6 @@ def get_patient_by_id(patient_id: str, supabase):
         patient_repo = PatientRepository(supabase)
         response = patient_repo.get_by_id(patient_id)
 
-        print("patient_id:", repr(patient_id))
-        print("response:", response)
-
         if response:
             return {
                 "success": True,
@@ -47,6 +44,21 @@ def get_patient_by_id(patient_id: str, supabase):
             "success": False,
             "message": str(e)
         }
+
+
+def _compensate_auth_user(user_id: str, db_message: str, rollback_prefix: str):
+    delete_response = delete_auth_user(user_id)
+
+    if not delete_response["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"{rollback_prefix}: {delete_response['message']}",
+        )
+
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=db_message,
+    )
 
 
 def create_patient(request: CreatePatientRequest, supabase):
@@ -94,21 +106,11 @@ def create_patient(request: CreatePatientRequest, supabase):
     )
 
     if not insert_response["success"]:
-        delete_response = delete_auth_user(user.id)
-
-        if not delete_response["success"]:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=(
-                    "Failed to insert patient into database and failed "
-                    "to delete user from auth: "
-                    f"{delete_response['message']}"
-                ),
-            )
-
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=insert_response["message"],
+        _compensate_auth_user(
+            user.id,
+            insert_response["message"],
+            "Failed to insert patient into database and failed "
+            "to delete user from auth",
         )
 
     # 4. Convert request into profile
@@ -121,21 +123,11 @@ def create_patient(request: CreatePatientRequest, supabase):
     )
 
     if not profile_response["success"]:
-        delete_response = delete_auth_user(user.id)
-
-        if not delete_response["success"]:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=(
-                    "Failed to insert patient profile and failed "
-                    "to delete auth user: "
-                    f"{delete_response['message']}"
-                ),
-            )
-
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=profile_response["message"],
+        _compensate_auth_user(
+            user.id,
+            profile_response["message"],
+            "Failed to insert patient profile and failed "
+            "to delete auth user",
         )
 
     # Everything succeeded
