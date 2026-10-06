@@ -2,10 +2,6 @@ from pydantic import BaseModel
 
 
 class LoginRequest(BaseModel):
-    email: str
-    password: str
-
-class UnifiedLoginRequest(BaseModel):
     identifier: str | None = None
     email: str | None = None
     patient_id: str | None = None

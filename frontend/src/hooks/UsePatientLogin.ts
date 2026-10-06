@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 import { sessionManager } from "/@/utils/SessionManager";
-import { loginUnified, UnifiedLoginRequest } from "/@/api/auth.api";
+import { login, LoginRequest } from "/@/api/auth.api";
 
 export const PATIENT_ID_PATTERN = /^\d{8}-[SFA]$/i;
 
@@ -14,7 +14,7 @@ export interface PatientLoginFormState {
 
 export function usePatientLogin() {
     const mutation = useMutation({
-        mutationFn: (request: UnifiedLoginRequest) => loginUnified(request),
+        mutationFn: (request: LoginRequest) => login(request),
         onSuccess: (data) => {
             sessionManager.setLogin(
                 data.access_token,
@@ -50,7 +50,7 @@ export function usePatientLoginForm() {
         }));
     };
 
-    const toRequest = (): UnifiedLoginRequest => ({
+    const toRequest = (): LoginRequest => ({
         identifier: credentials.idNumber.trim(),
         password: credentials.password,
     });

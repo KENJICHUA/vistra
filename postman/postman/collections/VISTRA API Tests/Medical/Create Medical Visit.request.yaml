@@ -13,9 +13,9 @@ body:
 
     \    \"staff_id\": \"{{user_id}}\",\r
 
-    \    \"status\": \"Cleared\",\r
+    \    \"status\": \"cleared\",\r
 
-    \    \"type\": \"Medical Consultation\",\r
+    \    \"type\": \"medicalConsultation\",\r
 
     \    \"visit_date\": \"2026-10-05T09:00:00\",\r
 

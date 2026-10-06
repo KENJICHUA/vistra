@@ -19,7 +19,7 @@ servers:
 paths:
   /auth/login/:
     post:
-      summary: Unified Login
+      summary: Login
       responses: {}
       tags:
         - Auth
@@ -44,7 +44,7 @@ paths:
               password: testpass123
   /auth/refresh/:
     post:
-      summary: Unified Refresh
+      summary: Refresh
       responses: {}
       tags:
         - Auth
@@ -56,25 +56,6 @@ paths:
               properties:
                 refresh_token:
                   type: string
-  /staff/auth/login:
-    post:
-      summary: Login
-      responses: {}
-      tags:
-        - Auth
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-            example:
-              email: '{{user_id}}'
-              password: testpass123
   '/staff/{user_id}/':
     get:
       summary: Staff ID

@@ -1,16 +1,18 @@
 $kind: http-request
-url: "{{base_url}}/staff/auth/refresh/"
+url: "{{base_url}}/auth/login/"
 method: POST
 body:
   type: json
   content: "{\r
 
-    \    \"refresh_token\": \"invalid-token\"\r
+    \    \"identifier\": \"20230847-S\",\r
+
+    \    \"password\": \"wrongpass123\"\r
 
     }"
 scripts:
   - type: afterResponse
-    code: "pm.test(\"Invalid refresh token returns 401\", function () {\r
+    code: "pm.test(\" invalid login returns 401\", function () {\r
 
       \    pm.response.to.have.status(401);\r
 
@@ -22,10 +24,8 @@ scripts:
 
       \    const json = pm.response.json();\r
 
-      \r
-
       \    pm.expect(json).to.have.property(\"detail\");\r
 
       \    });"
     language: text/javascript
-order: 3100
+order: 2500

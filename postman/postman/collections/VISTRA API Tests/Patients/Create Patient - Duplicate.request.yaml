@@ -9,7 +9,7 @@ body:
   type: json
   content: "{\r
 
-    \    \"patient_id\": \"TEST001\",\r
+    \    \"patient_id\": \"20230847-S\",\r
 
     \    \"password\": \"TestPass123!\",\r
 
@@ -42,9 +42,9 @@ body:
     }"
 scripts:
   - type: afterResponse
-    code: "pm.test(\"Duplicate patient returns 400\", function () {\r
+    code: "pm.test(\"Duplicate patient returns 409\", function () {\r
 
-      \    pm.response.to.have.status(400);\r
+      \    pm.response.to.have.status(409);\r
 
       \    });\r
 

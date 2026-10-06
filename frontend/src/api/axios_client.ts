@@ -85,9 +85,7 @@ axiosClient.interceptors.response.use(
         if (
             error.response?.status === 401 &&
             !originalRequest._retry &&
-            originalRequest.url !== API_ENDPOINTS.auth.login &&
-            originalRequest.url !== API_ENDPOINTS.staff.login &&
-            originalRequest.url !== API_ENDPOINTS.patient.login
+            originalRequest.url !== API_ENDPOINTS.auth.login
         ) {
             originalRequest._retry = true;
 

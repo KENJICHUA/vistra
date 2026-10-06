@@ -1,18 +1,18 @@
 $kind: http-request
-url: "{{base_url}}/staff/auth/login/"
+url: "{{base_url}}/auth/login/"
 method: POST
 body:
   type: json
   content: "{\r
 
-    \    \"email\": \"{{user_id}}\",\r
+    \    \"identifier\": \"{{user_id}}\",\r
 
     \    \"password\": \"testpass123\"\r
 
     }"
 scripts:
   - type: afterResponse
-    code: "pm.test(\"Login returns 200\", function () {\r
+    code: "pm.test(\" login (staff identifier) returns 200\", function () {\r
 
       \    pm.response.to.have.status(200);\r
 
@@ -32,11 +32,13 @@ scripts:
 
       \r
 
-      pm.test(\"Response contains access token\", function () {\r
+      pm.test(\"Response contains access token and role\", function () {\r
 
       \    pm.expect(json).to.have.property(\"access_token\");\r
 
       \    pm.expect(json.access_token).to.be.a(\"string\");\r
+
+      \    pm.expect(json.user).to.have.property(\"role\");\r
 
       \    });\r
 
@@ -60,4 +62,5 @@ scripts:
 
       \    );"
     language: text/javascript
-order: 1000
+order: 1500
+

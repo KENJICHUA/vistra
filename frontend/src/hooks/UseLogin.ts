@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { sessionManager } from "/@/utils/SessionManager";
-import { loginUnified } from "/@/api/auth.api";
+import { login } from "/@/api/auth.api";
 import { PasswordAndId } from "/@/api/schema/ApiResponseSchema"
 import axios from "axios";
 /* -------------------------------------------------------------------------- */
@@ -21,7 +21,7 @@ interface LoginValidationErrors {
 export function useLogin() {
     const mutation = useMutation({
         mutationFn: async (credentials: PasswordAndId) =>
-            loginUnified({ identifier: credentials.email, password: credentials.password }),
+            login({ identifier: credentials.email, password: credentials.password }),
 
         onSuccess: (data) => {
             sessionManager.setLogin(

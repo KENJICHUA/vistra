@@ -125,7 +125,7 @@ export default function PatientLoginPage() {
     if (!ID_PATTERN.test(idNumber.trim())) return;
     if (!credentials.password) return;
     try {
-      // Unified auth: POST /auth/login/ with { identifier, password }.
+      // Auth: POST /auth/login/ with { identifier, password }.
       await login(toRequest());
       navigate(homeHref);
     } catch {}

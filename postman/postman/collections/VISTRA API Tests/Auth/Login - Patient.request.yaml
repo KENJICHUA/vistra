@@ -5,14 +5,14 @@ body:
   type: json
   content: "{\r
 
-    \    \"identifier\": \"{{user_id}}\",\r
+    \    \"identifier\": \"20230847-S\",\r
 
     \    \"password\": \"testpass123\"\r
 
     }"
 scripts:
   - type: afterResponse
-    code: "pm.test(\"Unified login (staff identifier) returns 200\", function () {\r
+    code: "pm.test(\" login (patient identifier) returns 200\", function () {\r
 
       \    pm.response.to.have.status(200);\r
 
@@ -40,26 +40,6 @@ scripts:
 
       \    pm.expect(json.user).to.have.property(\"role\");\r
 
-      \    });\r
-
-      \r
-
-      pm.environment.set(\r
-
-      \    \"access_token\",\r
-
-      \    json.access_token\r
-
-      \    );\r
-
-      \r
-
-      pm.environment.set(\r
-
-      \    \"refresh_token\",\r
-
-      \    json.refresh_token\r
-
-      \    );"
+      \    });"
     language: text/javascript
-order: 1500
+order: 1600

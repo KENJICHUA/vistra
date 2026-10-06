@@ -1,11 +1,7 @@
 from fastapi import HTTPException
+
 from app.database.database_client import supabase
-from app.services.auth.login import login_user
-from app.utils.email_utils import add_ucc_domain, staff_id_format
 
-
-def staff_login(request):
-    return login_user(request)
 
 def auth_refresh_token(request):
     try:
