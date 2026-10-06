@@ -1,17 +1,20 @@
 import React, {useMemo} from "react";
 import {FileText, Stethoscope, Calendar} from "lucide-react";
 import StatsGrid from "./Stats";
-import {AppointmentTableFormat, APPOINTMENTS} from "/@/pages/admin/appointments/appointmentsData";
+import {AppointmentTableFormat} from "/@/pages/admin/appointments/appointmentsData";
 import PanelHeader from "/@/components/OverviewHeader.jsx";
 import {
-    buildClinicalRecords,
     DepartmentBadge,
-    recordLimit,
 } from "/@/components/overviewcmp.jsx";
-import {parseTimeToday} from "/@/utils/FormatDate";
 import {Status, statusLabels} from "/@/components/StatusBadge";
 import {CardList} from "/@/components/CardList";
 import {CountUp} from "/@/components/adminanim.jsx";
+import {useOverviewAppointments, useOverviewConsultations} from "/@/hooks/OverviewQuery";
+import {
+    mapAppointmentToTable,
+    mapDentalToOverview,
+    mapMedicalToOverview,
+} from "/@/repository/OverviewModel";
 
 const PANEL_HEIGHT = "h-[520px]";
 
@@ -91,7 +94,55 @@ function ConsultationsList({entries}: { entries: ConsultationEntry[] }) {
     );
 }
 
-function ConsultationPanel({filteredRecords}: { filteredRecords: ConsultationEntry[] }) {
+function PanelListSkeleton({rows = 4}: { rows?: number }) {
+    return (
+        <div className="flex flex-col gap-4 py-2" aria-label="Loading">
+            {Array.from({length: rows}).map((_, i) => (
+                <div key={i} className="flex flex-col gap-2 animate-pulse">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="h-4 w-1/3 rounded bg-border"/>
+                        <div className="h-3 w-16 rounded bg-border"/>
+                    </div>
+                    <div className="h-3 w-1/2 rounded bg-border/70"/>
+                    <div className="h-3 w-24 rounded bg-border/70"/>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function PanelError({message, onRetry}: { message: string; onRetry: () => void }) {
+    return (
+        <div className="flex flex-col items-center gap-2 py-10 text-center">
+            <p className="text-sm font-medium text-textPrimary">Couldn't load data</p>
+            <p className="text-xs text-textMuted">{message}</p>
+            <button
+                type="button"
+                onClick={onRetry}
+                className="mt-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+            >
+                Retry
+            </button>
+        </div>
+    );
+}
+
+function ConsultationPanel() {
+    const {data, isLoading, isError, refetch, isFetching} = useOverviewConsultations();
+
+    const filteredRecords = useMemo(() => {
+        if (!data) return [];
+        const merged = [
+            ...data.medical.items.map(mapMedicalToOverview),
+            ...data.dental.items.map(mapDentalToOverview),
+        ];
+        return merged
+            .sort((a, b) => +new Date(b.visitDate) - +new Date(a.visitDate))
+            .slice(0, 8);
+    }, [data]);
+
+    const loading = isLoading || (isFetching && !data);
+
     return (
         <div className={`flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-card ${PANEL_HEIGHT}`}>
             <PanelHeader
@@ -102,7 +153,13 @@ function ConsultationPanel({filteredRecords}: { filteredRecords: ConsultationEnt
             />
 
             <div className="mt-5 min-h-0 flex-1 overflow-y-auto">
-                <ConsultationsList entries={filteredRecords}/>
+                {loading ? (
+                    <PanelListSkeleton rows={5}/>
+                ) : isError ? (
+                    <PanelError message="Consultations failed to load." onRetry={() => refetch()}/>
+                ) : (
+                    <ConsultationsList entries={filteredRecords}/>
+                )}
             </div>
         </div>
     );
@@ -163,10 +220,14 @@ function AppointmentsList({entries}: { entries: AppointmentTableFormat[] }) {
 }
 
 function AppointmentsPanel() {
+    const {data, isLoading, isError, refetch, isFetching} = useOverviewAppointments(APPOINTMENT_LIMIT);
+
     const recentAppointments = useMemo(
-        () => APPOINTMENTS.slice(0, APPOINTMENT_LIMIT),
-        []
+        () => (data?.items ?? []).map(mapAppointmentToTable).slice(0, APPOINTMENT_LIMIT),
+        [data]
     );
+
+    const loading = isLoading || (isFetching && !data);
 
     return (
         <div className={`flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-card ${PANEL_HEIGHT}`}>
@@ -178,26 +239,24 @@ function AppointmentsPanel() {
             />
 
             <div className="mt-5 min-h-0 flex-1 overflow-y-auto">
-                <AppointmentsList entries={recentAppointments}/>
+                {loading ? (
+                    <PanelListSkeleton rows={4}/>
+                ) : isError ? (
+                    <PanelError message="Appointments failed to load." onRetry={() => refetch()}/>
+                ) : (
+                    <AppointmentsList entries={recentAppointments}/>
+                )}
             </div>
         </div>
     );
 }
 
 export default function OverviewTab() {
-    const clinicalRecords = useMemo(() => buildClinicalRecords(), []);
-
-    const recentRecords = useMemo(() => {
-        return [...clinicalRecords]
-            .sort((a, b) => parseTimeToday(a.time) - parseTimeToday(b.time))
-            .slice(0, recordLimit);
-    }, [clinicalRecords]);
-
     return (
         <>
             <StatsGrid stats={[]}/>
             <div className="reveal-group mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-                <ConsultationPanel filteredRecords={recentRecords}/>
+                <ConsultationPanel/>
                 <AppointmentsPanel/>
             </div>
         </>
