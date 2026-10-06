@@ -33,7 +33,9 @@ scripts:
     code: pm.environment.set("created_staff_id", "STFT-" + Date.now());
     language: text/javascript
   - type: afterResponse
-    code: "console.log(\"========================================\");\r
+    code: "```javascript\r
+
+      console.log(\"========================================\");\r
 
       console.log(\"CREATE STAFF DEBUG\");\r
 
@@ -145,6 +147,8 @@ scripts:
 
       \    pm.expect(json).to.have.property(\"message\");\r
 
-      });\r\n"
+      });\r
+
+      ```"
     language: text/javascript
 order: 4000
