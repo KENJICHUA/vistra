@@ -14,10 +14,11 @@ import DentalTab from "/@/pages/admin/dental/dentalTab";
 import DentalRecordForm from "/@/pages/admin/dental/dentalForm";
 import DentalRecordView from "/@/pages/admin/dental/dentalViewRec";
 import PageNotFound from "/@/pages/public/PageNotFound";
-import ProtectedRoute from "/@/routes/ProtectedRoute.jsx";
+import ProtectedRoute from "/@/routes/ProtectedRoute";
+import GuestRoute from "/@/routes/GuestRoute";
 import NewPatientRecordForm from "/@/pages/admin/patients/patientNewRec.jsx";
 import {PatientsPage, ViewPatientRecord} from "/@/pages/admin/patients/PatientPages";
-import ProtectedPatientRoute from "/@/components/ProtectedPatientRoute";
+import ProtectedPatientRoute from "/src/routes/ProtectedPatientRoute";
 import PatientLayout from "/@/layouts/PatientLayout";
 import PatientLoginPage from "/@/pages/patient/login";
 import PatientOverviewTab from "/@/pages/patient/overview/overview";
@@ -44,10 +45,12 @@ function AppRoutes() {
 
                 {/* Admin Showcase / Login */}
                 <Route path={ROUTES.staff.home} element={<StaffLandingPage/>}/>
-                <Route path={ROUTES.staff.login} element={<StaffLoginPage/>}/>
+                <Route element={<GuestRoute/>}>
+                    <Route path={ROUTES.staff.login} element={<StaffLoginPage/>}/>
 
-                {/* Patient Login (standalone page, no layout) */}
-                <Route path={ROUTES.patient.login} element={<PatientLoginPage/>}/>
+                    {/* Patient Login (standalone page, no layout) */}
+                    <Route path={ROUTES.patient.login} element={<PatientLoginPage/>}/>
+                </Route>
 
                 {/* Admin */}
 
