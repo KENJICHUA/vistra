@@ -51,7 +51,22 @@ jobs:
       - name: Login to Postman CLI
         run: |
           postman login --with-api-key "${{ secrets.POSTMAN_API_KEY }}"
-
+      - name: Show API routes
+        run: |
+          curl -s http://localhost:8000/openapi.json > openapi.json
+      
+          python - <<'PY'
+          import json
+      
+          with open("openapi.json") as f:
+              data = json.load(f)
+      
+          print("=== VISTRA API ROUTES ===")
+      
+          for path, methods in data["paths"].items():
+              for method in methods:
+                  print(f"{method.upper():6} {path}")
+          PY
       - name: Run API tests
         run: |
           postman collection run \
