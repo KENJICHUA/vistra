@@ -1,7 +1,5 @@
 import type {ReactNode} from "react";
 
-import LoadingPage from "/@/components/LoadingPage";
-
 export interface ColumnFilterOption {
     value: string;
     label: string;
@@ -120,15 +118,19 @@ export const GenericTableBody = <T extends { id: string }>({
     const colSpan = columns.length + (renderAction ? 1 : 0);
     if (isLoading && data.length === 0) {
         return (
-            <tbody>
-            <tr>
-                <td
-                    colSpan={colSpan}
-                    className="py-10 text-center text-sm text-textMuted"
-                >
-                    <LoadingPage />
-                </td>
-            </tr>
+            <tbody aria-label="Loading">
+            {Array.from({length: 5}).map((_, row) => (
+                <tr key={row} className="animate-pulse">
+                    {Array.from({length: colSpan}).map((_, col) => (
+                        <td
+                            key={col}
+                            className="border-b border-border py-3 pr-4"
+                        >
+                            <div className="h-4 w-full max-w-[140px] rounded bg-border"/>
+                        </td>
+                    ))}
+                </tr>
+            ))}
             </tbody>
         );
     }
@@ -171,12 +173,12 @@ export const GenericTableBody = <T extends { id: string }>({
         )}
 
         {isLoading && data.length > 0 && (
-            <tr>
+            <tr className="animate-pulse" aria-label="Loading more">
                 <td
                     colSpan={colSpan}
-                    className="py-3 text-center text-xs text-textMuted"
+                    className="py-3"
                 >
-                    Loading...
+                    <div className="mx-auto h-3 w-32 rounded bg-border"/>
                 </td>
             </tr>
         )}

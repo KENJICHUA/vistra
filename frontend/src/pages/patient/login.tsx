@@ -14,10 +14,11 @@ import {
 } from "lucide-react";
 import { ROUTES } from "/@/config/RoutePaths.js";
 import { Logo } from "/@/components/Logo.jsx";
-import { useLogin, useLoginForm } from "/@/hooks/UseLogin.js";
+import { PATIENT_ID_PATTERN, usePatientLogin, usePatientLoginForm } from "/@/hooks/UsePatientLogin";
+import { useNavigate } from "react-router-dom";
 import { AdminAnimStyles, HeartbeatLine, LiveDot } from "/@/components/adminanim.jsx";
 
-const ID_PATTERN = /^\d{8}-[SFA]$/i;
+const ID_PATTERN = PATIENT_ID_PATTERN;
 
 const ROLE_LABELS: Record<string, string> = {
   S: "Student",
@@ -99,15 +100,16 @@ function LoginPanel() {
 }
 
 export default function PatientLoginPage() {
-  const { credentials, handleChange } = useLoginForm();
-  const { login, isLoading, error } = useLogin();
+  const navigate = useNavigate();
+  const { credentials, handleChange, toRequest } = usePatientLoginForm();
+  const { login, isLoading, isError, error } = usePatientLogin();
 
   const homeHref = ROUTES.patient?.dashboard?.overview ?? "/";
 
   const [showPassword, setShowPassword] = useState(false);
   const [idTouched, setIdTouched] = useState(false);
 
-  const idNumber: string = credentials.idNumber ?? credentials.staffId ?? "";
+  const idNumber: string = credentials.idNumber ?? "";
   const isIdValid = idNumber.length === 0 || ID_PATTERN.test(idNumber.trim());
   const detectedRole = useMemo(() => getRoleFromId(idNumber), [idNumber]);
 
@@ -121,7 +123,12 @@ export default function PatientLoginPage() {
     e.preventDefault();
     setIdTouched(true);
     if (!ID_PATTERN.test(idNumber.trim())) return;
-    await login(credentials);
+    if (!credentials.password) return;
+    try {
+      // Unified auth: POST /auth/login/ with { identifier, password }.
+      await login(toRequest());
+      navigate(homeHref);
+    } catch {}
   };
 
   return (
@@ -157,9 +164,9 @@ export default function PatientLoginPage() {
                 noValidate
                 className="form-stagger relative px-8 pb-8 pt-6 sm:px-12 sm:pb-10"
               >
-                {error ? (
+                {isError && error ? (
                   <div
-                    key={error}
+                    key={String(error)}
                     role="alert"
                     className="shake mb-5 flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger"
                   >

@@ -11,7 +11,8 @@ export const API_ENDPOINTS = {
         health_check: "/api/health",
     },
     auth:{
-        refresh_token: "/staff/auth/refresh/",
+        login: "/auth/login/",
+        refresh_token: "/auth/refresh/",
     },
     staff: {
         login: "/staff/auth/login/",
@@ -19,6 +20,7 @@ export const API_ENDPOINTS = {
         getStaffById: (staffId: string) => `/staff/${staffId}/`,
     },
     patient: {
+        login: "/patients/auth/login/",
         get_patients: "/patients/",
         create_patient: "/patients/",
         get_all_patient_profile: "/patients/profiles/",

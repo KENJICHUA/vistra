@@ -9,7 +9,7 @@ import {
 import {Status, statusLabels} from "/@/components/StatusBadge";
 import {CardList} from "/@/components/CardList";
 import {CountUp} from "/@/components/adminanim.jsx";
-import {useOverviewAppointments, useOverviewConsultations} from "/@/hooks/OverviewQuery";
+import {useOverviewData} from "/@/hooks/OverviewQuery";
 import {
     mapAppointmentToTable,
     mapDentalToOverview,
@@ -127,21 +127,23 @@ function PanelError({message, onRetry}: { message: string; onRetry: () => void }
     );
 }
 
-function ConsultationPanel() {
-    const {data, isLoading, isError, refetch, isFetching} = useOverviewConsultations();
-
+function ConsultationPanel({medical, dental, loading, isError, onRetry}: {
+    medical?: { items: Parameters<typeof mapMedicalToOverview>[0][] };
+    dental?: { items: Parameters<typeof mapDentalToOverview>[0][] };
+    loading: boolean;
+    isError: boolean;
+    onRetry: () => void;
+}) {
     const filteredRecords = useMemo(() => {
-        if (!data) return [];
+        if (!medical || !dental) return [];
         const merged = [
-            ...data.medical.items.map(mapMedicalToOverview),
-            ...data.dental.items.map(mapDentalToOverview),
+            ...medical.items.map(mapMedicalToOverview),
+            ...dental.items.map(mapDentalToOverview),
         ];
         return merged
             .sort((a, b) => +new Date(b.visitDate) - +new Date(a.visitDate))
             .slice(0, 8);
-    }, [data]);
-
-    const loading = isLoading || (isFetching && !data);
+    }, [medical, dental]);
 
     return (
         <div className={`flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-card ${PANEL_HEIGHT}`}>
@@ -156,7 +158,7 @@ function ConsultationPanel() {
                 {loading ? (
                     <PanelListSkeleton rows={5}/>
                 ) : isError ? (
-                    <PanelError message="Consultations failed to load." onRetry={() => refetch()}/>
+                    <PanelError message="Consultations failed to load." onRetry={onRetry}/>
                 ) : (
                     <ConsultationsList entries={filteredRecords}/>
                 )}
@@ -219,15 +221,16 @@ function AppointmentsList({entries}: { entries: AppointmentTableFormat[] }) {
     );
 }
 
-function AppointmentsPanel() {
-    const {data, isLoading, isError, refetch, isFetching} = useOverviewAppointments(APPOINTMENT_LIMIT);
-
+function AppointmentsPanel({appointments, loading, isError, onRetry}: {
+    appointments?: { items: Parameters<typeof mapAppointmentToTable>[0][] };
+    loading: boolean;
+    isError: boolean;
+    onRetry: () => void;
+}) {
     const recentAppointments = useMemo(
-        () => (data?.items ?? []).map(mapAppointmentToTable).slice(0, APPOINTMENT_LIMIT),
-        [data]
+        () => (appointments?.items ?? []).map(mapAppointmentToTable).slice(0, APPOINTMENT_LIMIT),
+        [appointments]
     );
-
-    const loading = isLoading || (isFetching && !data);
 
     return (
         <div className={`flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-card ${PANEL_HEIGHT}`}>
@@ -242,7 +245,7 @@ function AppointmentsPanel() {
                 {loading ? (
                     <PanelListSkeleton rows={4}/>
                 ) : isError ? (
-                    <PanelError message="Appointments failed to load." onRetry={() => refetch()}/>
+                    <PanelError message="Appointments failed to load." onRetry={onRetry}/>
                 ) : (
                     <AppointmentsList entries={recentAppointments}/>
                 )}
@@ -252,12 +255,16 @@ function AppointmentsPanel() {
 }
 
 export default function OverviewTab() {
+    const {data, isLoading, isFetching, isError, refetch} = useOverviewData(APPOINTMENT_LIMIT, 8);
+    const loading = isLoading || (isFetching && !data);
+    const retry = () => refetch();
+
     return (
         <>
             <StatsGrid stats={[]}/>
             <div className="reveal-group mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
-                <ConsultationPanel/>
-                <AppointmentsPanel/>
+                <ConsultationPanel medical={data?.medical} dental={data?.dental} loading={loading} isError={isError} onRetry={retry}/>
+                <AppointmentsPanel appointments={data?.appointments} loading={loading} isError={isError} onRetry={retry}/>
             </div>
         </>
     );

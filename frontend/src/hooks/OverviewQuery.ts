@@ -5,10 +5,42 @@ import { getMedicalVisit } from "/@/api/medical.api";
 
 /**
  * Overview panel server state.
- * Reuses existing list endpoints - no new backend route.
+ * Single consolidated query to avoid duplicate mounts/refetches.
  * - Appointments: GET /appointments/
  * - Consultations: merged GET /medical/ + GET /dental/
  */
+export function useOverviewData(appointmentLimit = 6, consultationLimit = 8) {
+    return useQuery({
+        queryKey: ["overview", appointmentLimit, consultationLimit],
+        queryFn: async ({ signal }) => {
+            const consultationHalf = Math.ceil(consultationLimit / 2);
+            const [appointmentsRes, medicalRes, dentalRes] = await Promise.all([
+                getAllAppointments({ page: 1, page_size: appointmentLimit }, signal),
+                getMedicalVisit({ page: 1, page_size: consultationHalf }, signal),
+                getDentalVisit({ page: 1, page_size: consultationHalf }, signal),
+            ]);
+
+            if (!appointmentsRes.data.data) {
+                throw new Error("Appointment data is missing");
+            }
+            if (!medicalRes.data.data || !dentalRes.data.data) {
+                throw new Error("Consultation data is missing");
+            }
+
+            return {
+                appointments: appointmentsRes.data.data,
+                medical: medicalRes.data.data,
+                dental: dentalRes.data.data,
+            };
+        },
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        staleTime: 60_000,
+        gcTime: 5 * 60_000,
+        retry: 1,
+    });
+}
+
 export function useOverviewAppointments(limit = 6) {
     return useQuery({
         queryKey: ["overview", "appointments", limit],
@@ -25,7 +57,10 @@ export function useOverviewAppointments(limit = 6) {
             return data.data;
         },
         refetchOnWindowFocus: false,
-        staleTime: 30_000,
+        refetchOnMount: false,
+        staleTime: 60_000,
+        gcTime: 5 * 60_000,
+        retry: 1,
     });
 }
 
@@ -49,6 +84,9 @@ export function useOverviewConsultations(limit = 8) {
             };
         },
         refetchOnWindowFocus: false,
-        staleTime: 30_000,
+        refetchOnMount: false,
+        staleTime: 60_000,
+        gcTime: 5 * 60_000,
+        retry: 1,
     });
 }

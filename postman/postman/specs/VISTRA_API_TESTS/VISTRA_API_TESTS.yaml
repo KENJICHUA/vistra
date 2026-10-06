@@ -17,6 +17,45 @@ info:
 servers:
   - url: '{{base_url}}'
 paths:
+  /auth/login/:
+    post:
+      summary: Unified Login
+      responses: {}
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identifier:
+                  type: string
+                email:
+                  type: string
+                patient_id:
+                  type: string
+                staff_id:
+                  type: string
+                password:
+                  type: string
+            example:
+              identifier: '{{user_id}}'
+              password: testpass123
+  /auth/refresh/:
+    post:
+      summary: Unified Refresh
+      responses: {}
+      tags:
+        - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
   /staff/auth/login:
     post:
       summary: Login
