@@ -1,0 +1,92 @@
+from datetime import date, timedelta
+
+
+class SupabaseQueryBuilder:
+
+    def __init__(
+        self,
+        supabase,
+        table: str,
+        columns: str = "*",
+        count: str | None = None,
+    ):
+        self.query = (
+            supabase
+            .table(table)
+            .select(columns, count=count)
+        )
+
+    def _apply(self, op: str, column: str, value):
+        if value is not None:
+            self.query = getattr(self.query, op)(column, value)
+
+        return self
+
+    def eq(self, column: str, value):
+        return self._apply("eq", column, value)
+
+    def neq(self, column: str, value):
+        return self._apply("neq", column, value)
+
+    def gt(self, column: str, value):
+        return self._apply("gt", column, value)
+
+    def gte(self, column: str, value):
+        return self._apply("gte", column, value)
+
+    def lt(self, column: str, value):
+        return self._apply("lt", column, value)
+
+    def lte(self, column: str, value):
+        return self._apply("lte", column, value)
+
+    def date_day(self, column: str, value):
+        """
+        Match every timestamp within the calendar day of a
+        YYYY-MM-DD string: column >= day AND column < next day.
+        Skipped when value is empty. Raises ValueError on bad input.
+        """
+        if not value:
+            return self
+
+        day = date.fromisoformat(value)
+
+        return (
+            self
+            .gte(column, str(day))
+            .lt(column, str(day + timedelta(days=1)))
+        )
+
+    def ilike(self, column: str, value: str):
+        if value:
+            self.query = self.query.ilike(column, value)
+
+        return self
+
+    def or_(self, filters: str):
+        if filters:
+            self.query = self.query.or_(filters)
+
+        return self
+
+    def order(self, column: str, desc: bool = False):
+        self.query = self.query.order(
+            column,
+            desc=desc
+        )
+
+        return self
+
+    def range(self, start: int, end: int):
+        self.query = self.query.range(start, end)
+
+        return self
+
+    def paginate(self, page: int, page_size: int):
+        start = (page - 1) * page_size
+        end = start + page_size - 1
+
+        return self.range(start, end)
+
+    def build(self):
+        return self.query

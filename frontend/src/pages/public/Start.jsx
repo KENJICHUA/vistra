@@ -1,13 +1,15 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Reveal, fadeUp, fadeRight, stagger } from "../../components/landinganim.jsx";
 import { LiveDot } from "./Shared.jsx";
 import { vitals, vitalStyles } from "./data.jsx";
+import { ROUTES } from "/@/config/RoutePaths";
 
 export default function Start() {
   return (
-    <section className="relative overflow-hidden">
+    <section id="top" className="relative overflow-hidden">
       <div className="bg-grid pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black,transparent)]" />
       <div className="pointer-events-none absolute -top-40 left-1/2 h-96 w-[42rem] -translate-x-1/2 rounded-full bg-primary/10 blur-[110px]" />
 
@@ -41,13 +43,14 @@ export default function Start() {
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white shadow-card transition-transform hover:scale-[1.02] hover:bg-primaryDark"
               >
                 Download the App
-                <ArrowRight className="h-4 w-4" />
               </a>
-              <a href="#hours"
+              <Link
+                to={ROUTES.patient.login}
                 className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-5 py-3 text-sm font-medium text-textPrimary transition-colors hover:border-primary/40"
               >
-                See clinic hours
-              </a>
+                Proceed to Check-In
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
           </Reveal>
         </div>

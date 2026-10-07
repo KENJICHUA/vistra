@@ -1,0 +1,45 @@
+$kind: http-request
+url: "{{base_url}}/auth/login/"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"identifier\": \"20230847-S\",\r
+
+    \    \"password\": \"testpass123\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\" login (patient identifier) returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      \    });\r
+
+      \r
+
+      const json = pm.response.json();\r
+
+      \r
+
+      pm.test(\"Response contains access token and role\", function () {\r
+
+      \    pm.expect(json).to.have.property(\"access_token\");\r
+
+      \    pm.expect(json.access_token).to.be.a(\"string\");\r
+
+      \    pm.expect(json.user).to.have.property(\"role\");\r
+
+      \    });"
+    language: text/javascript
+order: 1600

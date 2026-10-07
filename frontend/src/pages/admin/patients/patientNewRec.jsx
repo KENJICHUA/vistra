@@ -1,4 +1,3 @@
-
 import  { useState } from "react";
 import { ArrowLeft, Save, UserPlus, Info, Eye, EyeOff } from "lucide-react";
 import { FormInput, SelectField } from "/@/components/InputCollection.jsx";
@@ -12,7 +11,7 @@ import {
   POSITION_OPTIONS,
   DEPARTMENT_OPTIONS,
 } from "/@/utils/NewPatientUtils.jsx";
-
+import MedicalHistoryForm from "/@/components/MedicalHistoryForm";
 import {
   STUDENT_ID_PATTERN,
   FACULTY_ID_PATTERN,
@@ -22,15 +21,17 @@ import {
   validateAdminId,
 } from "/@/utils/NewPatientValidation.jsx";
 
-import { usePatientContext } from "/@/context/PatientContext.tsx";
+import { useSavePatient } from "/@/hooks/SavePatient.ts";
+import {getFieldErrors} from "/@/utils/Formatters.js";
 
 export default function NewPatientRecordForm() {
   const {
-    savePatient,
-    isSaving,
-    saveError,
-  } = usePatientContext();
-  const saveErrorMessage = saveError;
+    mutateAsync: savePatient,
+    isPending: isSaving,
+    error: saveError,
+  } = useSavePatient();
+
+  const saveErrorMessage = getFieldErrors(saveError);
   const [classification, setClassification] = useState("student");
   const [studentIdError, setStudentIdError] = useState("");
   const [facultyIdError, setFacultyIdError] = useState("");
@@ -64,9 +65,6 @@ export default function NewPatientRecordForm() {
 
     try {
       await savePatient(record);
-
-      console.log("Patient created successfully");
-
       window.history.back();
     } catch (error) {
       console.error("Failed to create patient:", error);
@@ -75,7 +73,7 @@ export default function NewPatientRecordForm() {
 
   const isStudent = classification === "student";
   const isFaculty = classification === "faculty";
-  const isAdmin = classification === "admin";
+  const isAdmin = classification === "staff";
 
   return (
       <form
@@ -111,13 +109,9 @@ export default function NewPatientRecordForm() {
         </div>
 
         {/* Save errors */}
-        {saveErrorMessage?.length > 0 && (
+        {saveErrorMessage && (
             <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-              <ul className="list-disc space-y-1 pl-5">
-                {saveErrorMessage.map((message, index) => (
-                    <li key={index}>{message}</li>
-                ))}
-              </ul>
+              <p>{saveErrorMessage}</p>
             </div>
         )}
 
@@ -131,6 +125,7 @@ export default function NewPatientRecordForm() {
                 label="Name"
                 placeholder="Last name, First name, Middle name"
                 required
+                error={saveErrorMessage?.name}
             />
           </div>
 
@@ -200,6 +195,7 @@ export default function NewPatientRecordForm() {
               label="Birthday"
               type="date"
               required
+              error={saveErrorMessage?.birthday}
           />
 
           <FormInput
@@ -209,6 +205,7 @@ export default function NewPatientRecordForm() {
               type="tel"
               placeholder="09XXXXXXXXX"
               required
+              error={saveErrorMessage?.mobile_number}
           />
 
           {/* Password */}
@@ -254,6 +251,7 @@ export default function NewPatientRecordForm() {
               type="number"
               placeholder="e.g. 20"
               required
+              error={saveErrorMessage?.age}
           />
 
           <SelectField
@@ -261,6 +259,7 @@ export default function NewPatientRecordForm() {
               name="sex"
               label="Sex"
               options={SEX_OPTIONS}
+              error={saveErrorMessage?.sex}
           />
 
           <SelectField
@@ -268,6 +267,7 @@ export default function NewPatientRecordForm() {
               name="civil_status"
               label="Civil status"
               options={CIVIL_STATUS_OPTIONS}
+              error={saveErrorMessage?.civil_status}
           />
         </div>
 
@@ -284,6 +284,7 @@ export default function NewPatientRecordForm() {
                     name="course"
                     label="Course"
                     options={COURSE_OPTIONS}
+                    error={saveErrorMessage?.course_department}
                 />
 
                 <SelectField
@@ -291,6 +292,7 @@ export default function NewPatientRecordForm() {
                     name="year"
                     label="Year"
                     options={YEAR_OPTIONS}
+                    error={saveErrorMessage?.year}
                 />
 
                 <SelectField
@@ -298,6 +300,7 @@ export default function NewPatientRecordForm() {
                     name="section"
                     label="Section"
                     options={SECTION_OPTIONS}
+                    error={saveErrorMessage?.section}
                 />
               </div>
             </div>
@@ -316,6 +319,7 @@ export default function NewPatientRecordForm() {
                     name="department"
                     label="Department"
                     options={DEPARTMENT_OPTIONS}
+                    error={saveErrorMessage?.department}
                 />
 
                 <SelectField
@@ -323,51 +327,42 @@ export default function NewPatientRecordForm() {
                     name="position"
                     label="Position"
                     options={POSITION_OPTIONS}
+                    error={saveErrorMessage?.position}
                 />
               </div>
             </div>
         )}
 
-        {/* Address */}
-        <div className="mt-8 border-t border-border pt-6">
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-primary">
-            RESIDENTIAL ADDRESS
-          </h2>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="sm:col-span-2">
-              <FormInput
-                  id="address"
-                  name="address"
-                  label="Address"
-                  placeholder="House no., Street"
-                  required
-              />
-            </div>
-
+      <div className="mt-8 border-t border-border pt-6">
+        <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-primary">RESIDENTIAL ADDRESS</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="sm:col-span-2">
             <FormInput
-                id="barangay"
-                name="barangay"
-                label="Barangay"
-                placeholder="e.g. Brgy. 176"
+                id="address"
+                name="address"
+                label="Address"
+                placeholder="House no., Street"
                 required
+                error={saveErrorMessage?.address}
             />
           </div>
-        </div>
-
-        {/* Notice */}
-        <div className="mt-6 flex items-start justify-center gap-1.5 text-center text-xs text-info">
-          <Info
-              className="mt-0.5 h-3.5 w-3.5 shrink-0"
-              strokeWidth={2}
+          <FormInput
+              id="barangay"
+              name="barangay"
+              label="Barangay"
+              placeholder="e.g. Brgy. 176"
+              required
+              error={saveErrorMessage?.barangay}
           />
-
-          <span>
-            Please ensure all information is accurate before saving.
-            This record will be stored in the system for future
-            reference.
-        </span>
         </div>
+      </div>
+
+      <MedicalHistoryForm />
+
+      <div className="mt-6 flex items-start justify-center gap-1.5 text-center text-xs text-info">
+        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
+        <span>Please ensure all information is accurate before saving. This record will be stored in the system for future reference.</span>
+      </div>
 
         {/* Actions */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6">
@@ -401,4 +396,3 @@ export default function NewPatientRecordForm() {
 
   );
 }
-

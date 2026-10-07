@@ -1,0 +1,30 @@
+$kind: http-request
+url: "{{base_url}}/dental/20230847-S/{{dental_visit_id}}"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Get dental record returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Dental record belongs to the patient\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(true);\r
+
+      \    pm.expect(json.data.patient_id).to.eql(\"20230847-S\");\r
+
+      \    });"
+    language: text/javascript
+order: 9300

@@ -1,0 +1,87 @@
+name: Automated API tests using Postman CLI
+
+on: push
+
+jobs:
+  automated-api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start backend
+        working-directory: backend
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_PRIVILEGE_KEY: ${{ secrets.SUPABASE_PRIVILEGE_KEY }}
+          LOCAL_FRONTEND_URL: ${{ secrets.LOCAL_FRONTEND_URL }}
+        run: |
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 > backend.log 2>&1 &
+
+      - name: Wait for backend
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:8000/api/health; then
+              echo "Backend is ready"
+              exit 0
+            fi
+
+            echo "Waiting for backend..."
+            sleep 2
+          done
+
+          echo "Backend failed to start"
+          cat backend/backend.log
+          exit 1
+
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+      - name: Login to Postman CLI
+        run: |
+          postman login --with-api-key "${{ secrets.POSTMAN_API_KEY }}"
+
+      - name: Show API routes
+        run: |
+          curl -s http://localhost:8000/openapi.json > openapi.json
+
+          python - <<'PY'
+          import json
+
+          with open("openapi.json") as f:
+              data = json.load(f)
+
+          print("=== VISTRA API ROUTES ===")
+
+          for path, methods in data["paths"].items():
+              for method in methods:
+                  print(f"{method.upper():6} {path}")
+          PY
+
+      - name: Run API tests
+        run: |
+          postman collection run \
+            "50029254-ad5ecc2b-5f62-4ab4-9b0a-5bfcce774647" \
+            -e "50029254-3315d264-c581-4815-a558-3b5e5f4dc7ca" \
+            --env-var "base_url=http://localhost:8000" \
+            --reporters cli
+
+      - name: Show backend logs
+        if: always()
+        run: |
+          echo "=== BACKEND LOGS ==="
+          cat backend/backend.log

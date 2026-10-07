@@ -1,0 +1,35 @@
+$kind: http-request
+url: "{{base_url}}/staff/"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+body:
+  type: json
+  content: "{\r
+
+    \    \"staff_id\": \"STFT-{{$timestamp}}\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Missing fields returns 422\", function () {\r
+
+      \    pm.response.to.have.status(422);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Validation detail is returned\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json).to.have.property(\"detail\");\r
+
+      \    });"
+    language: text/javascript
+order: 6000

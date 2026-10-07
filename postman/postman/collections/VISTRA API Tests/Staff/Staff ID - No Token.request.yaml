@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/staff/{{user_id}}/"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: ""
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Unauthenticated request returns 401\", function () {\r
+
+      \    pm.response.to.have.status(401);\r
+
+      });"
+    language: text/javascript
+order: 2000

@@ -1,0 +1,114 @@
+from app.schemas.query import FilterDental
+from app.schemas.response_dto.reponses import PaginatedResponse
+from app.utils.supabase_query_builder import SupabaseQueryBuilder
+
+
+class DentalRepositories:
+    def __init__(self, supabase):
+        self.supabase = supabase
+
+    def create(self, data, staff_id):
+        response = (
+            self.supabase
+            .table("DENTAL_VISIT")
+            .insert(data.to_db_dict(staff_id))
+            .execute()
+        )
+
+        if not response.data:
+            return None
+
+        return response.data[0]["id"]
+
+    def create_odontogram(
+            self,
+            data,
+            patient_id,
+            dental_record_id: int
+    ):
+        teeth = [
+            item.to_db_dict(patient_id, dental_record_id)
+            for item in data
+        ]
+        response = (
+            self.supabase
+            .table("ODONTOGRAM")
+            .insert(teeth)
+            .execute()
+        )
+
+        return response.data
+
+    def get_dental_visits(self, filters: FilterDental):
+        query = (
+            SupabaseQueryBuilder(
+                self.supabase,
+                "dental_tab",
+                columns=(
+                    "id, patient_id, patient_name, course, "
+                    "visit_date, staff_id, status"
+                ),
+                count="exact",
+            )
+            .order("visit_date", desc=True)
+            .eq("status", filters.status)
+            .eq("course", filters.course)
+        )
+
+        if filters.date:
+            query = query.date_day("visit_date", filters.date)
+
+        if filters.search:
+            like = f"%{filters.search}%"
+            query = query.or_(
+                f"patient_name.ilike.{like},"
+                f"patient_id.ilike.{like},"
+            )
+
+        response = (
+            query
+            .paginate(filters.page, filters.page_size)
+            .build()
+            .execute()
+        )
+
+        return PaginatedResponse(
+            items=response.data or [],
+            total=response.count or 0,
+            page=filters.page,
+            page_size=filters.page_size,
+        )
+
+    def get_dental_record(self, patient_id: str, dental_visit_id: int):
+        response = (
+            self.supabase
+            .table("dental_record_view")
+            .select("*")
+            .eq("patient_id", patient_id)
+            .eq("dental_visit_id", str(dental_visit_id))
+            .limit(1)
+            .execute()
+        )
+
+        if not response.data:
+            return None
+
+        return response.data[0]
+
+    def delete_odontogram_by_visit(self, dental_visit_id: int):
+        response = (
+            self.supabase.table("ODONTOGRAM")
+            .delete()
+            .eq("dental_record_id", dental_visit_id)
+            .execute()
+        )
+        return response.data or []
+
+    def delete_visit(self, dental_visit_id: int):
+        response = (
+            self.supabase.table("DENTAL_VISIT")
+            .delete()
+            .eq("id", dental_visit_id)
+            .execute()
+        )
+        return bool(response.data)

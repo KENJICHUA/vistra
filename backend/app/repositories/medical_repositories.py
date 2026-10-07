@@ -1,0 +1,85 @@
+from app.schemas.query import FilterMedical
+from app.schemas.response_dto.reponses import PaginatedResponse
+from app.utils.supabase_query_builder import SupabaseQueryBuilder
+
+
+class MedicalRepositories:
+    def __init__(self, supabase):
+        self.supabase = supabase
+
+    def get_medical_visits(self, filters: FilterMedical):
+        query = (
+            SupabaseQueryBuilder(
+                self.supabase,
+                "medical_tab",
+                columns=(
+                    "id, patient_id, patient_name, course, "
+                    "visit_date, staff_id, status"
+                ),
+                count="exact",
+            )
+            .order("visit_date", desc=True)
+            .eq("status", filters.status)
+            .eq("course", filters.course)
+        )
+
+        if filters.date:
+            query = query.date_day("visit_date", filters.date)
+
+        if filters.search:
+            like = f"%{filters.search}%"
+            query = query.or_(
+                f"patient_name.ilike.{like},"
+                f"patient_id.ilike.{like},"
+            )
+
+        response = (
+            query
+            .paginate(filters.page, filters.page_size)
+            .build()
+            .execute()
+        )
+
+        return PaginatedResponse(
+            items=response.data or [],
+            total=response.count or 0,
+            page=filters.page,
+            page_size=filters.page_size,
+        )
+
+    def delete_visit(self, medical_visit_id: int):
+        response = (
+            self.supabase.table("MEDICAL_VISIT")
+            .delete()
+            .eq("id", medical_visit_id)
+            .execute()
+        )
+        return bool(response.data)
+
+    def get_medical_record(self, patient_id: str, medical_visit_id: int):
+        response = (
+            self.supabase
+            .table("medical_record_view")
+            .select("*")
+            .eq("medical_visit_id", str(medical_visit_id))
+            .limit(1)
+            .execute()
+        )
+
+        if not response.data:
+            return None
+
+        return response.data[0]
+
+    def create(self, data):
+        response = (
+            self.supabase
+            .table("MEDICAL_VISIT")
+            .insert(data.to_db_dict())
+            .execute()
+        )
+
+        if not response.data:
+            return None
+
+        return response.data[0]["id"]

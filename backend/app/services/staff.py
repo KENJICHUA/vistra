@@ -1,11 +1,10 @@
-"""
-TODO: Implement staff management functions using Supabase Admin API.
-staff_update()
-"""
+from fastapi import HTTPException, status
+
 from app.repositories.staff_repositories import StaffRepository
 from app.schemas.staff import StaffData, CreateStaffRequest
 from app.services.auth.user import create_auth_user, delete_auth_user
 from app.utils.email_utils import remove_ucc_domain
+from app.utils.service_helpers import handle_service_errors, or_404
 
 
 def create_staff(request: CreateStaffRequest, supabase):
@@ -74,9 +73,6 @@ def get_staff_by_id(staff_id: str, supabase):
         staff_repo = StaffRepository(supabase)
         response = staff_repo.get_by_id(staff_id)
 
-        print("staff_id:", repr(staff_id))
-        print("response:", response)
-
         if response:
             return {
                 "success": True,
@@ -93,3 +89,29 @@ def get_staff_by_id(staff_id: str, supabase):
             "success": False,
             "message": str(e)
         }
+
+
+@handle_service_errors
+def delete_staff(staff_id: str, supabase):
+    staff_repo = StaffRepository(supabase)
+    existing = staff_repo.get_by_id(staff_id)
+    or_404(existing, "Staff not found")
+
+    deleted = staff_repo.delete(staff_id)
+    or_404(deleted, "Staff not found")
+
+    delete_response = delete_auth_user(existing[0]["id"])
+
+    if not delete_response["success"]:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=(
+                "Staff deleted from database but failed "
+                f"to delete user from auth: {delete_response['message']}"
+            )
+        )
+
+    return {
+        "success": True,
+        "message": "Staff deleted successfully"
+    }

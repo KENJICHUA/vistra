@@ -9,15 +9,19 @@ class SeparatedName(BaseModel):
 
 
 def separate_name(full_name: str) -> SeparatedName:
-    parts = full_name.strip().split()
+    parts = [part.strip() for part in full_name.split(",")]
 
     if len(parts) < 2:
         raise ValueError(
-            "Full name must contain at least a first and last name"
+            "Name must contain at least a last name and first name"
         )
 
+    last_name = parts[0]
+    first_name = parts[1]
+    middle_name = parts[2] if len(parts) > 2 else None
+
     return SeparatedName(
-        first_name=parts[0],
-        middle_name=" ".join(parts[1:-1]) if len(parts) > 2 else None,
-        last_name=parts[-1],
+        last_name=last_name,
+        first_name=first_name,
+        middle_name=middle_name,
     )

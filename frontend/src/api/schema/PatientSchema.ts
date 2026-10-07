@@ -24,6 +24,7 @@ export interface CreatePatientSchema {
     department?: string
     position?: string
 }
+
 export interface PatientProfile {
     id: string
     patient_id: string
@@ -40,4 +41,28 @@ export interface PatientProfile {
     course?: string
     contact_no?: string
     school_year?: string
+    department?: string
+    section?: string
+    person_type: string
+    last_visit: string
+}
+
+export interface PatientRecord {
+    id: number;
+    date: string;
+    title: string;
+    notes: string | null;
+    staff_id: string;
+    provider: string;
+}
+
+export interface PatientInfo {
+    patient_id: string;
+    patient_name: string;
+    course?: string;
+    department?: string;
+    school_year?: string;
+    appointment: PatientRecord[];
+    medical: PatientRecord[];
+    dental: PatientRecord[];
 }

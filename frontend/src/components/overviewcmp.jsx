@@ -1,5 +1,5 @@
-import { medRecords } from "../pages/admin/medical/medicalData";
-import { dentalRecords } from "../pages/admin/dental/dentalData";
+import { medRecords } from "../pages/admin/medical/medicalData.tsx";
+import { dentalRecords } from "../pages/admin/dental/DentalData.tsx";
 
 export const recordLimit = 8;
 
@@ -9,21 +9,6 @@ export function buildClinicalRecords() {
   return [...medical, ...dental];
 }
 
-export function parseTimeToday(timeStr) {
-  const match = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec((timeStr ?? "").trim());
-  if (!match) return null;
-
-  let [, hours, minutes, meridiem] = match;
-  hours = parseInt(hours, 10);
-  minutes = parseInt(minutes, 10);
-
-  if (meridiem.toUpperCase() === "PM" && hours !== 12) hours += 12;
-  if (meridiem.toUpperCase() === "AM" && hours === 12) hours = 0;
-
-  const result = new Date();
-  result.setHours(hours, minutes, 0, 0);
-  return result;
-}
 
 const clinicalDesign = {
   Medical: { badge: "border-primary/30 bg-primary/10 text-primary", dot: "bg-primary", ring: "ring-primary/20" },
@@ -37,4 +22,7 @@ export function DepartmentBadge({ department }) {
       {department}
     </span>
   );
+}
+
+export class parseTimeToday {
 }

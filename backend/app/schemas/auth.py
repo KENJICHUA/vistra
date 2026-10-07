@@ -2,7 +2,10 @@ from pydantic import BaseModel
 
 
 class LoginRequest(BaseModel):
-    email: str
+    identifier: str | None = None
+    email: str | None = None
+    patient_id: str | None = None
+    staff_id: str | None = None
     password: str
 
 class RefreshTokenRequest(BaseModel):

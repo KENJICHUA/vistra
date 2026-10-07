@@ -1,0 +1,26 @@
+$kind: http-request
+url: "{{base_url}}/staff/{{created_staff_id}}/"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Deleted staff reports failure\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(false);\r
+
+      \    pm.expect(json).to.have.property(\"message\");\r
+
+      \    });"
+    language: text/javascript
+order: 6200

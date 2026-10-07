@@ -1,0 +1,63 @@
+$kind: http-request
+url: "{{base_url}}/medical/"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+body:
+  type: json
+  content: "{\r
+
+    \    \"patient_id\": \"20230847-S\",\r
+
+    \    \"staff_id\": \"{{user_id}}\",\r
+
+    \    \"status\": \"cleared\",\r
+
+    \    \"type\": \"medicalConsultation\",\r
+
+    \    \"visit_date\": \"2026-10-05T09:00:00\",\r
+
+    \    \"visit_log\": [{\r
+
+    \        \"complaint\": \"Fever, headache since morning\",\r
+
+    \        \"treatment\": \"Paracetamol 500mg, rest advised\"\r
+
+    \    }]\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Create medical visit returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Medical visit id is returned\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(true);\r
+
+      \    pm.expect(json).to.have.property(\"medical_visit_id\");\r
+
+      \    });\r
+
+      \r
+
+      pm.environment.set(\r
+
+      \    \"medical_visit_id\",\r
+
+      \    pm.response.json().medical_visit_id\r
+
+      \    );"
+    language: text/javascript
+order: 9550

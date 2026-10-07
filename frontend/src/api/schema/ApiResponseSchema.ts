@@ -1,16 +1,24 @@
-export interface ApiDataResponse<T> {
+import {SessionUser} from "/@/utils/SessionManager";
+
+export interface ApiResponse<T> {
     success: boolean;
     message?: string;
-    data: Array<T>;
+    data?: T;
 }
-
+export interface PaginatedData<T> {
+    items: T[];
+    page: number;
+    page_size: number;
+    total: number;
+    total_pages: number
+}
 export interface ApiMessageResponse {
     success: boolean;
     message: string;
 }
 
 export interface PasswordAndId {
-    staffId: string;
+    email: string;
     password: string;
 }
 
@@ -19,11 +27,5 @@ export interface LoginStaffResponse {
     refresh_token: string;
     token_type: string;
     detail: string
-    user: userSessionField;
-}
-
-interface userSessionField {
-    email: string
-    id: string
-    staff_id: string
+    user: SessionUser;
 }

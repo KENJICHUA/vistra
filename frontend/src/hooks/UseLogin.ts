@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { sessionManager } from "/@/utils/SessionManager";
-import { loginStaff } from "/@/api/auth.api";
+import { login } from "/@/api/auth.api";
 import { PasswordAndId } from "/@/api/schema/ApiResponseSchema"
+import axios from "axios";
 /* -------------------------------------------------------------------------- */
 /* Types                                                                      */
 /* -------------------------------------------------------------------------- */
 
 interface LoginValidationErrors {
-    staffId?: string;
+    email?: string;
     password?: string;
 }
 
@@ -19,24 +20,28 @@ interface LoginValidationErrors {
 
 export function useLogin() {
     const mutation = useMutation({
-        mutationFn: loginStaff,
+        mutationFn: async (credentials: PasswordAndId) =>
+            login({ identifier: credentials.email, password: credentials.password }),
 
         onSuccess: (data) => {
-            console.log(data);
-
             sessionManager.setLogin(
                 data.access_token,
                 data.refresh_token,
                 data.user
-            )
+            );
         },
     });
+
+    const errorMessage =
+        axios.isAxiosError(mutation.error)
+            ? mutation.error.response?.data?.detail ?? mutation.error.message
+            : mutation.error?.message ?? null;
 
     return {
         login: mutation.mutateAsync,
         isLoading: mutation.isPending,
         isError: mutation.isError,
-        error: mutation.error?.message ?? null,
+        error: errorMessage,
     };
 }
 
@@ -47,7 +52,7 @@ export function useLogin() {
 export function useLoginForm() {
     const [credentials, setCredentials] =
         useState<PasswordAndId>({
-            staffId: "",
+            email: "",
             password: "",
         });
 
@@ -75,8 +80,8 @@ export function useLoginForm() {
     const validate = (): boolean => {
         const newErrors: LoginValidationErrors = {};
 
-        if (!credentials.staffId.trim()) {
-            newErrors.staffId = "Staff ID is required.";
+        if (!credentials.email.trim()) {
+            newErrors.email = "Staff ID is required.";
         }
 
         if (!credentials.password) {

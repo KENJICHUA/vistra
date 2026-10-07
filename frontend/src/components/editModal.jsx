@@ -3,7 +3,6 @@ import { X } from "lucide-react";
 
 export const patientEditFields = [
   { key: "name", label: "Full name", required: true },
-  { key: "status", label: "Status", type: "select", options: ["Cleared", "Not Cleared"] },
   { key: "studentId", label: "Student ID" },
   { key: "yearSection", label: "Year & section" },
   { key: "age", label: "Age" },
@@ -15,17 +14,14 @@ export const patientEditFields = [
   { key: "address", label: "Address" },
 ];
 
+// Standalone field list for the "Update status" modal, so status changes
+// go through their own small form instead of the full patient edit form.
+export const statusEditFields = [
+  { key: "status", label: "Status", type: "select", options: ["Cleared", "Not Cleared","Second Option", "Recovered", "Referred","Ongoing Treatment"] },
+];
+
 export const dentalEditFields = [
-  { key: "name", label: "Full name", required: true },
-  { key: "studentId", label: "Student ID" },
-  { key: "yearSection", label: "Year & section" },
-  { key: "age", label: "Age" },
-  {
-    key: "sex",
-    label: "Sex",
-    type: "select",
-    options: ["Male", "Female", "Other"],
-  },
+
   { key: "date", label: "Exam date", type: "date" },
   { key: "lastVisit", label: "Last dental visit" },
   {
@@ -34,7 +30,7 @@ export const dentalEditFields = [
     type: "select",
     options: ["Yes", "No"],
   },
-  { key: "brushFrequency", label: "Brushing frequency" },
+  { key: "brushFrequency", label: "Brushing frequency", type: "select", options: ["Once a day", "Twice a day", "More than twice a day"] },
   {
     key: "calculus",
     label: "Calculus",
@@ -42,7 +38,9 @@ export const dentalEditFields = [
     options: ["None", "Light", "Moderate", "Heavy"],
   },
   { key: "medication", label: "Medication" },
+  { key: "status", label: "Status", type: "select", options: ["Cleared", "Not Cleared","Second Option", "Recovered", "Referred","Ongoing Treatment"] },
   { key: "notes", label: "Notes", type: "textarea", span: true },
+  
 ];
 
 export function Modal({
@@ -92,7 +90,7 @@ export function Modal({
 const inputClass =
   "w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/40";
 
-function FormField({ field, value, onChange }) {
+export function FormField({ field, value, onChange }) {
   const {
     key,
     label,

@@ -98,7 +98,7 @@ export function getPatientSubLine(patient) {
   if (!patient) return "";
   const isStudent = patient.userType === "Student";
   return isStudent
-    ? [patient.course, patient.yearSection].filter(Boolean).join(" • ")
+    ? [patient.course_department, patient.yearSection].filter(Boolean).join(" • ")
     : patient.department || "";
 }
 

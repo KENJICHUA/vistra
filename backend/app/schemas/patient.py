@@ -1,7 +1,13 @@
-from datetime import date, datetime
+from datetime import date
 from uuid import UUID
+
 from pydantic import BaseModel, Field, field_validator
+
+from app.enums.civil_status import CivilStatus
+from app.enums.sex import Sex
 from app.utils.name_utils import separate_name
+from app.utils.validator.common import confirm_mobile_number, confirm_not_blank, confirm_enum, confirm_birthday
+
 
 class Patient(BaseModel):
     id: UUID
@@ -23,6 +29,8 @@ class PatientProfile(BaseModel):
     course: str | None = None
     contact_no: str | None = None
     school_year: str | None = None
+    department: str | None = None
+    person_type: str | None = None
 
 
 class PatientMedicalHistory(BaseModel):
@@ -45,7 +53,7 @@ class PatientVitalSigns(BaseModel):
     patient_id: str
     temperature: float | None = None
     blood_pressure: float | None = None
-    hearth_rate: float | None = None
+    heart_rate: float | None = None
     respiratory_rate: float | None = None
     eyes: float | None = None
     recorded_at: date | None = None
@@ -56,9 +64,6 @@ class PatientFamilyMedicalHistory(BaseModel):
     patient_id: str
     condition: str | None = "NONE"
     other_condition: str | None = "NONE"
-
-
-
 
 
 class CreatePatientRequest(BaseModel):
@@ -101,56 +106,40 @@ class CreatePatientRequest(BaseModel):
             course=self.course,
             contact_no=self.mobile_number,
             school_year=self.school_year,
+            department=self.department,
+            person_type=self.classification,
+
         )
-    
-    @field_validator("name", "address", "barangay")
+
+    @field_validator("patient_id", "name", "address", "barangay")
     @classmethod
     def validate_not_blank(cls, value: str):
-        value = value.strip()
+        return confirm_not_blank(value)
 
-        if not value:
-            raise ValueError("Field cannot be blank")
-
-        return value
+    @field_validator("birthday")
+    @classmethod
+    def validate_birthday(cls, value: date):
+        return confirm_birthday(value)
 
     @field_validator("mobile_number")
     @classmethod
-    def validate_mobile_number(cls, value: str):
-        value = value.strip()
-
-        if not value.isdigit():
-            raise ValueError("Mobile number must contain only digits")
-
-        if len(value) not in (10, 11):
-            raise ValueError("Invalid mobile number")
-
-        return value
+    def validate_mobile(cls, value: str) -> str:
+        return confirm_mobile_number(value)
 
     @field_validator("sex")
     @classmethod
     def validate_sex(cls, value: str):
-        allowed = {"Male", "Female"}
-
-        if value not in allowed:
-            raise ValueError(
-                f"Sex must be one of: {', '.join(allowed)}"
-            )
-
-        return value
+        return confirm_enum(value, Sex)
 
     @field_validator("civil_status")
     @classmethod
     def validate_civil_status(cls, value: str):
-        allowed = {
-            "Single",
-            "Married",
-            "Widowed",
-            "Separated"
-        }
+        return confirm_enum(value, CivilStatus)
 
-        if value not in allowed:
-            raise ValueError(
-                f"Civil status must be one of: {', '.join(allowed)}"
-            )
-
-        return value
+class PatientRecord(BaseModel):
+    id: int
+    date: str
+    title: str
+    notes: str | None
+    staff_id: str
+    provider: str

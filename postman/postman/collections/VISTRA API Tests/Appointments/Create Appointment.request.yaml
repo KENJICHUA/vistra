@@ -1,0 +1,55 @@
+$kind: http-request
+url: "{{base_url}}/appointments/"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+body:
+  type: json
+  content: "{\r
+
+    \    \"patient_id\": \"20230847-S\",\r
+
+    \    \"scheduled_start\": \"2026-12-01T09:00:00\",\r
+
+    \    \"scheduled_end\": \"2026-12-01T10:00:00\",\r
+
+    \    \"reason\": \"Postman test visit\",\r
+
+    \    \"location\": \"Clinic A\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Create appointment returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Appointment is created with an id\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(true);\r
+
+      \    pm.expect(json.data).to.have.property(\"id\");\r
+
+      \    });\r
+
+      \r
+
+      pm.environment.set(\r
+
+      \    \"appointment_id\",\r
+
+      \    pm.response.json().data.id\r
+
+      \    );"
+    language: text/javascript
+order: 8000

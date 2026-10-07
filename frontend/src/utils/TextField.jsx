@@ -1,6 +1,8 @@
 import { FieldLabel } from "./FieldLabel";
-//DEPRECATED
-//use FormInput at /@/components/InputCollection.tsx
+/**
+ * @deprecated Use `FormInput` instead.
+ * /@/components/InputCollection
+ */
 export function TextField({ id, name, label, type = "text", placeholder }) {
   return (
     <div>

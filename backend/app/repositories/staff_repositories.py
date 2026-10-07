@@ -25,7 +25,7 @@ class StaffRepository:
             .execute()
         )
 
-    def get_all(self):
+    def get_staff(self):
         response = (
             self.supabase
             .table("STAFF")
@@ -34,3 +34,12 @@ class StaffRepository:
         )
 
         return response.data
+
+    def delete(self, staff_id: str):
+        response = (
+            self.supabase.table("STAFF")
+            .delete()
+            .eq("staff_id", staff_id)
+            .execute()
+        )
+        return bool(response.data)

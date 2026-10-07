@@ -1,0 +1,73 @@
+$kind: http-request
+url: "{{base_url}}/dental/"
+method: POST
+auth:
+  type: bearer
+  credentials:
+    token: "{{access_token}}"
+body:
+  type: json
+  content: "{\r
+
+    \    \"patient_id\": \"20230847-S\",\r
+
+    \    \"last_dental_visit\": \"2025-01-01\",\r
+
+    \    \"brushing_frequency\": \"Twice a day\",\r
+
+    \    \"floss\": true,\r
+
+    \    \"calculus_severity\": \"Light\",\r
+
+    \    \"current_medications\": \"None\",\r
+
+    \    \"notes\": \"Postman test visit\",\r
+
+    \    \"status\": \"ComingSoon\",\r
+
+    \    \"tooth_records\": [{\r
+
+    \        \"tooth_number\": 16,\r
+
+    \        \"condition\": \"sound\",\r
+
+    \        \"dentition\": \"permanent\",\r
+
+    \        \"notes\": \"\"\r
+
+    \    }]\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Create dental visit returns 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      \    });\r
+
+      \r
+
+      pm.test(\"Dental record id is returned\", function () {\r
+
+      \    const json = pm.response.json();\r
+
+      \r
+
+      \    pm.expect(json.success).to.eql(true);\r
+
+      \    pm.expect(json).to.have.property(\"dental_record_id\");\r
+
+      \    });\r
+
+      \r
+
+      pm.environment.set(\r
+
+      \    \"dental_visit_id\",\r
+
+      \    pm.response.json().dental_record_id\r
+
+      \    );"
+    language: text/javascript
+order: 9000

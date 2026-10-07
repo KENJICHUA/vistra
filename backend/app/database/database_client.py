@@ -5,22 +5,24 @@ from supabase import create_client, Client
 
 security = HTTPBearer()
 
-if not Config.SUPABASE_URL or not Config.SUPABASE_KEY:
-    raise ValueError("Missing SUPABASE_URL or SUPABASE_KEY in environment.")
 
-supabase: Client = create_client(
-    Config.SUPABASE_URL,
-    Config.SUPABASE_KEY
-)
+def _base_client(key: str | None = None) -> Client:
+    return create_client(
+        Config.supabase_url(),
+        key or Config.supabase_key(),
+    )
+
+
+if not Config.supabase_url() or not Config.supabase_key():
+    raise ValueError("Missing Supabase URL or key in environment.")
+
+supabase: Client = _base_client()
 
 
 def get_supabase_for_user(
         credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
-    client = create_client(
-        Config.SUPABASE_URL,
-        Config.SUPABASE_KEY
-    )
+    client = _base_client()
 
     client.postgrest.auth(credentials.credentials)
 
@@ -29,8 +31,5 @@ def get_supabase_for_user(
 
 supabase_admin: Client | None = None
 
-if Config.SUPABASE_PRIVILEGE_KEY:
-    supabase_admin = create_client(
-        Config.SUPABASE_URL,
-        Config.SUPABASE_PRIVILEGE_KEY
-    )
+if Config.supabase_privilege_key():
+    supabase_admin = _base_client(Config.supabase_privilege_key())
