@@ -1,4 +1,3 @@
-import {useEffect, useMemo, useState} from "react";
 import {
     ArrowLeft,
     CheckCircle2,
@@ -13,12 +12,9 @@ import {
 import type {LucideIcon} from "lucide-react";
 import {useParams} from "react-router-dom";
 
-import {AppointmentFilters} from "/@/api/schema/FilterSchemaCollection";
-import {useAppointmentContext} from "/@/context/PaginatedContext";
 import {AppointmentModel} from "/@/repository/AppointmentModel";
-import {AppointmentPageFormat} from "/@/pages/admin/appointments/appointmentsData";
 import LoadingPage from "/@/components/LoadingPage";
-import {useAppointmentByIdQuery} from "/@/hooks/AppointmentQuery";
+import {useAppointmentByIdQuery} from "/@/hooks/query/AppointmentQuery";
 import {useForm} from "/@/hooks/Form";
 
 type AppointmentStatus = "pending" | "confirmed" | "declined";

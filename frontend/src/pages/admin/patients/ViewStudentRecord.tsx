@@ -6,7 +6,7 @@ import {
     Syringe,
     CalendarClock,
 } from "lucide-react";
-import {usePatientRecordSummaryQuery} from "/@/hooks/PatientQuery";
+import {usePatientRecordSummaryQuery} from "/@/hooks/query/PatientQuery";
 import {PatientRecordTab} from "/@/types/types";
 import {PatientRecord} from "/@/api/schema/PatientSchema";
 import LoadingPage from "/@/components/LoadingPage";

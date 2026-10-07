@@ -9,7 +9,7 @@ import {
 import {Status, statusLabels} from "/@/components/StatusBadge";
 import {CardList} from "/@/components/CardList";
 import {CountUp} from "/@/components/adminanim.jsx";
-import {useOverviewData} from "/@/hooks/OverviewQuery";
+import {useOverviewData} from "/@/hooks/query/OverviewQuery";
 import {
     mapAppointmentToTable,
     mapDentalToOverview,

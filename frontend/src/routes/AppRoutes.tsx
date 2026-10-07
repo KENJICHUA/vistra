@@ -18,7 +18,7 @@ import ProtectedRoute from "/@/routes/ProtectedRoute";
 import GuestRoute from "/@/routes/GuestRoute";
 import NewPatientRecordForm from "/@/pages/admin/patients/patientNewRec.jsx";
 import {PatientsPage, ViewPatientRecord} from "/@/pages/admin/patients/PatientPages";
-import ProtectedPatientRoute from "/src/routes/ProtectedPatientRoute";
+import ProtectedPatientRoute from "/@/routes/ProtectedPatientRoute";
 import PatientLayout from "/@/layouts/PatientLayout";
 import PatientLoginPage from "/@/pages/patient/login";
 import PatientOverviewTab from "/@/pages/patient/overview/overview";

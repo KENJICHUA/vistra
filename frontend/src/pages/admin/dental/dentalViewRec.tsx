@@ -9,7 +9,7 @@ import {
 } from "/@/components/teethDesign.jsx";
 import LoadingPage from "/@/components/LoadingPage";
 import { StatusBadge } from "/@/components/StatusBadge";
-import { useDentalVisitDetail } from "/@/hooks/DentalQuery";
+import { useDentalVisitDetail } from "/@/hooks/query/DentalQuery";
 import { formatDate } from "/@/utils/FormatDate";
 
 interface DentalNotFoundProps {

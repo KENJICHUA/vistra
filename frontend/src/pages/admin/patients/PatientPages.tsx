@@ -1,6 +1,6 @@
 import PatientsTab from "/@/pages/admin/patients/patientsTab";
 import {PatientProvider} from "/@/context/PaginatedContext";
-import {usePatientQuery} from "/@/hooks/PatientQuery";
+import {usePatientQuery} from "/@/hooks/query/PatientQuery";
 import ViewStudentRecord from "/@/pages/admin/patients/ViewStudentRecord";
 import {PatientFilters} from "/@/api/schema/FilterSchemaCollection";
 import {useState} from "react";

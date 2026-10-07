@@ -8,7 +8,7 @@ import {
 } from "react";
 import { Check, ChevronDown, Search } from "lucide-react";
 
-import { usePatientDebouncedQuery } from "/@/hooks/PatientQuery";
+import { usePatientDebouncedQuery } from "/@/hooks/query/PatientQuery";
 import { FieldLabel } from "/@/utils/FieldLabel";
 import { PatientProfile } from "/@/api/schema/PatientSchema";
 

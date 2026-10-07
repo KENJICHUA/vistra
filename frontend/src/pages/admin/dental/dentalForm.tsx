@@ -1,20 +1,17 @@
-import {useState} from "react";
 import {ArrowLeft, Save, Stethoscope, Info} from "lucide-react";
 import {FieldLabel} from "/@/utils/FieldLabel.jsx";
 import {ToothArch, upperTeeth, lowerTeeth} from "/@/components/teethDesign.jsx";
 import {FormInput} from "/@/components/InputCollection.jsx";
 import {CheckboxRow} from "/@/utils/CheckboxRow.jsx";
 import {StudentInfoSection} from "/@/components/StudentInfoSection.jsx";
-import {students} from "../medical/medicalData";
 import {ToothNoteModal} from "/@/components/dental/ToothForm";
 import {useDentalRecordForm} from "/@/hooks/DentalForms";
-import {getFieldErrors, removeEmptyValues} from "/@/utils/Formatters";
-import {useCreateDentalVisit} from "/@/hooks/DentalQuery";
+import {getFieldErrors} from "/@/utils/Formatters";
+import {useCreateDentalVisit} from "/@/hooks/query/DentalQuery";
 import {CreateDentalVisit} from "/@/api/schema/DentalSchema";
-import {sessionManager} from "/@/utils/SessionManager";
 import {statusEditFields} from "/@/components/editModal.jsx";
 
-const statusOptions = statusEditFields.find((f) => f.key === "status").options;
+const statusOptions = statusEditFields.find((f) => f.key === "status")?.options ?? [];
 
 const medicalHistoryItems = ["Allergy", "Asthma", "Bleeder", "Diabetes", "Epilepsy", "Heart Disease", "Hypertension", "Others"];
 

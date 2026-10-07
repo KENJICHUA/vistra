@@ -12,7 +12,7 @@ import type {
     CreateMedicalVisit,
     MedicalVisitLog,
 } from "/@/api/schema/MedicalSchema";
-import {useCreateMedicalVisit} from "/@/hooks/MedicalQuery";
+import {useCreateMedicalVisit} from "/@/hooks/query/MedicalQuery";
 import {sessionManager} from "/@/utils/SessionManager";
 import {getFieldErrors} from "/@/utils/Formatters";
 

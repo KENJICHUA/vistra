@@ -22,7 +22,7 @@ import {
 } from "/@/utils/NewPatientValidation.jsx";
 
 import { useSavePatient } from "/@/hooks/SavePatient.ts";
-import {getFieldErrors} from "/src/utils/Formatters.js";
+import {getFieldErrors} from "/@/utils/Formatters.js";
 
 export default function NewPatientRecordForm() {
   const {

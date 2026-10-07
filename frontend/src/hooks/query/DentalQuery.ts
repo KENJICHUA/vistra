@@ -1,9 +1,8 @@
-import {CreateDentalVisit, DentalRecordDetailSchema, DentalVisitSchema} from "/@/api/schema/DentalSchema";
+import {CreateDentalVisit, DentalRecordDetailSchema} from "/@/api/schema/DentalSchema";
 import {createDentalVisit, getDentalRecordById, getDentalVisit} from "/@/api/dental.api";
 
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {AppointmentFilters, DentalVisitFilters} from "/@/api/schema/FilterSchemaCollection";
-import {getAllAppointments} from "/@/api/appointments.api";
 
 export function useCreateDentalVisit() {
     return useMutation({

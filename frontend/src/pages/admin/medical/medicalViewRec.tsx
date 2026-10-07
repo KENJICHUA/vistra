@@ -4,7 +4,7 @@ import { ArrowLeft, ClipboardList, Printer, User } from "lucide-react";
 import { InfoField, getInitials } from "/@/utils/RecordInfo";
 import { StatusBadge } from "/@/components/StatusBadge";
 import LoadingPage from "/@/components/LoadingPage";
-import { useMedicalVisitDetail } from "/@/hooks/MedicalQuery";
+import { useMedicalVisitDetail } from "/@/hooks/query/MedicalQuery";
 import type { MedicalRecordDetailSchema } from "/@/api/schema/MedicalSchema";
 
 /*

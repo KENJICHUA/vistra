@@ -23,6 +23,7 @@ export interface CreateDentalVisit {
     calculus_severity: string;
     current_medication: string
     notes: string
+    status: string;
 
     tooth_records: CreateToothRequest[];
 }

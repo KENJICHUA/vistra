@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {MedicalVisitFilters} from "/@/api/schema/FilterSchemaCollection";
-import {useMedicalQuery} from "/@/hooks/MedicalQuery";
+import {useMedicalQuery} from "/@/hooks/query/MedicalQuery";
 import {MedicalProvider} from "/@/context/PaginatedContext";
 import MedicalTab from "/@/pages/admin/medical/medicalTab";
 

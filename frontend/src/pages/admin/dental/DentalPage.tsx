@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {DentalVisitFilters} from "/@/api/schema/FilterSchemaCollection";
-import {useDentalQuery} from "/@/hooks/DentalQuery";
+import {useDentalQuery} from "/@/hooks/query/DentalQuery";
 import {DentalProvider} from "/@/context/PaginatedContext";
 import DentalTab from "/@/pages/admin/dental/dentalTab";
 

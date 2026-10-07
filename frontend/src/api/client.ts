@@ -5,7 +5,7 @@
 //DEPRECATED
 //DEPRECATED
 import { sessionManager } from "/@/utils/SessionManager";
-import {API_ENDPOINTS} from "/src/config/ApiConfig";
+import {API_ENDPOINTS} from "/@/config/ApiConfig";
 import {getApiUrl} from "../config/ApiConfig";
 const API_URL: string = getApiUrl();
 let refreshPromise: Promise<string> | null = null;
